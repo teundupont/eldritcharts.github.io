@@ -2135,6 +2135,158 @@ body:has(#token-bank.active-tab) #eldritch-phase-track {
   background: transparent;
 }
 
+/* 🔒 Freeze the maximum boundary width of the qualifiers container */
+.qualifiers-metric-box {
+  width: 100% !important;
+  max-width: 260px !important; /* Forces the box to stay perfectly narrow and compact */
+  position: relative;          /* Creates an anchor point for our floating drawer */
+}
+
+/* 🧊 Upgrade the grid wrapper layout to look balanced down to the baseline */
+.qualifiers-grid-wrapper {
+  background: transparent !important;
+/*  border: none !important;  Strips the inner border accent out of your gradient path */
+  margin-bottom: 20px !important; /* Extends the bottom space of the panel to clear empty areas */
+}
+
+/* 🛸 THE FLOATING DRAWER SOLUTION: Absolute positioning layer pass */
+.dormant-selection-drawer-space {
+  position: absolute !important;
+  bottom: -17px;               /* Pushes the drawer neatly below the main slider grid */
+  left: 0;
+  width: 100%;                 /* Matches the exact width of the panel above it */
+  z-index: 10;                 /* Ensures it floats safely on top of background canvas details */
+}
+
+/*=============================================================
+ Custom styling for your interactive/locked state shifts 
+============================================================ */
+.spell-effect-row .locked-pill-display {
+  display: none; /* Hidden by default when editing */
+}
+
+/* When the parent row receives the locked class, flip the visibility */
+.spell-effect-row.is-locked .effect-interactive-selectors {
+  display: none !important;
+}
+
+.spell-effect-row.is-locked .locked-pill-display {
+  display: inline-flex;
+  background-color: #2a2d3d; /* Matches your existing grey flat box theme */
+  color: #a5b4fc;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer; /* Gives a clear indication that it can be clicked to unlock */
+  font-size: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* --- Effects Ledger Lock/Unlock Styles --- */
+/* By default, the static locked pill container is hidden */
+.effect-token-row .locked-pill-display {
+  display: none;
+}
+
+/* Update the row styling to ONLY highlight when it is unlocked and clickable */
+.effect-token-row:not(.is-locked) {
+  cursor: pointer;
+}
+
+.effect-token-row:not(.is-locked):hover {
+  background-color: #131c32 !important; /* Slightly lighter blue ONLY when editing */
+}
+
+/* Ensure flat rows (which can never lock/unlock) don't look clickable */
+.effect-token-row:has(.flat-cost-marker) {
+  cursor: default;
+}
+.effect-token-row:has(.flat-cost-marker):hover {
+  background-color: #0f172a !important; /* Keeps standard color */
+}
+
+/* Give the locked grey pill its own active hover state since it is the click target now */
+.locked-pill-display:hover {
+  background-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+/* MAGIC SWAP STATE: When the row is locked */
+.effect-token-row.is-locked .effect-interactive-selectors {
+  display: none !important;
+}
+
+.effect-token-row.is-locked .locked-pill-display {
+  display: inline-flex !important;
+  background-color: #1e293b; /* Matches your pleasant flat box theme */
+  color: #94a3b8;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* --- Constraints Ledger Lock/Unlock Styles --- */
+/* By default, the static locked pill container is hidden */
+.constraint-slot-wrapper .locked-pill-display {
+  display: none;
+}
+
+/* Update the row styling to ONLY highlight when it is unlocked, filled, and NOT a flat row */
+.constraint-slot-wrapper:not(.slot-empty):not(.is-locked):not(.constraint-flat-row) {
+  cursor: pointer;
+}
+
+.constraint-slot-wrapper:not(.slot-empty):not(.is-locked):not(.constraint-flat-row):hover {
+  background-color: #1a1318 !important; /* Subtle dark burgundy tint on hover */
+}
+
+/* Ensure flat rows look default and never highlight on hover */
+.constraint-slot-wrapper.constraint-flat-row {
+  cursor: default !important;
+}
+.constraint-slot-wrapper.constraint-flat-row:hover {
+  background-color: #0f172a !important; /* Keeps the standard dark background */
+}
+
+/* Give the locked grey pill its own active hover state since it is the click target now */
+.constraint-slot-wrapper .locked-pill-display:hover {
+  background-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+/* MAGIC SWAP STATE: When the row is locked */
+.constraint-slot-wrapper.is-locked .constraint-interactive-selectors {
+  display: none !important;
+}
+
+.constraint-slot-wrapper.is-locked .locked-pill-display {
+  display: inline-flex !important;
+  background-color: #1e293b;
+  color: #94a3b8;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+
+  /* 🔥 MATCH FLAT CONTENT SCALING PERFECTLY: */
+  padding: 2px 6px;           /* Gives it the exact inner density of your flat items */
+  font-size: 0.75rem;         /* Matches your subSelectorMarkup font dimensions */
+  font-weight: bold;          /* Gives the symbol text the same bold footprint */
+  line-height: normal;        /* Prevents your text metrics from distorting box layout height */
+  flex-shrink: 0;             /* Retains total protection from horizontal line flattening */
+  align-items: center;        /* Centers your math values vertically */
+  justify-content: center;    /* Centers your math values horizontally */
+  
+  /* Remove old forced metrics: */
+  width: auto !important;     
+  height: auto !important;    
+}
+
+.constraint-slot-wrapper.is-locked .constraint-interactive-selectors {
+  display: none !important;
+  width: 0 !important;      /* Forces the hidden container to give up its layout space completely */
+}
+
   </style>
 </head>
 <body>
@@ -3360,95 +3512,23 @@ function createSpellCard(savedData = null) {
     
     <!-- LEFT SIDEBAR FLANK: DESCRIPTIONS & SPELL CONFIGURATIONS (2x weight) -->
     <div class="spell-workspace-left" style="flex: 2; min-width: 280px; display: flex; flex-direction: column; gap: 15px; box-sizing: border-box;">
-      
-      <div class="grid-fields" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-        
-        <div class="field-group">
-          <label>Spell Description</label>
-          <textarea class="sp-data" data-field="desc" style="min-height: 90px; resize: vertical;">${savedData?.desc || ''}</textarea>
-        </div>
-
-  <!-- REVISED INTERACTIVE ARCANE CONSTRAINTS ARCHITECTURE -->
-<div class="spell-card-attribute constraints-metric-box" style="display: flex; flex-direction: column; width: 100%; box-sizing: border-box; margin-top: 12px; padding: 0 4px; position: relative;">
     
-    <!-- Header tracking row -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; width: 100%;">
-        <label style="display: block; font-size: 0.75rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; margin: 0;">Arcane Constraints</label>
-        <span class="constraint-counter-badge" style="font-size: 0.75rem; color: #a855f7; font-weight: bold; background: #1e1b4b; padding: 2px 8px; border-radius: 4px; border: 1px dashed #a855f7;">0 / 3 Bound</span>
-    </div>
-
-    <!-- 🔥 SHARED FLOATING OVERLAY DROPDOWN MATRIX -->
-    <div class="constraint-suggestions-dropdown" style="display: none; position: absolute; left: 4px; right: 4px; max-height: 220px; overflow-y: auto; background: #1e293b; border: 1px solid #f59e0b; border-radius: 4px; z-index: 60; box-shadow: 0 4px 12px rgba(0,0,0,0.6);"></div>
-
-    <!-- Active Constraints Fixed 3-Slot Reservoir Dock Area -->
-    <div class="active-constraints-registry" style="display: flex; flex-direction: column; gap: 6px; width: 100%; box-sizing: border-box;">
-        
-        <!-- Socket Socket 1 (Clickable Portal) -->
-        <div class="constraint-slot-wrapper slot-empty" data-slot="0" style="display: flex; align-items: center; justify-content: center; height: 34px; background: transparent; border: 1px dashed #1e293b; border-radius: 4px; color: #4b5563; font-size: 0.75rem; font-style: italic; box-sizing: border-box; cursor: pointer; transition: all 0.2s;" onmouseover="if(this.classList.contains('slot-empty')) { this.style.borderColor='#f59e0b'; this.style.color='#f59e0b'; }" onmouseout="if(this.classList.contains('slot-empty')) { this.style.borderColor='#1e293b'; this.style.color='#4b5563'; }">
-            + Click to Bind Constraint 1
-        </div>
-        
-        <!-- Socket Socket 2 (Clickable Portal) -->
-        <div class="constraint-slot-wrapper slot-empty" data-slot="1" style="display: flex; align-items: center; justify-content: center; height: 34px; background: transparent; border: 1px dashed #1e293b; border-radius: 4px; color: #4b5563; font-size: 0.75rem; font-style: italic; box-sizing: border-box; cursor: pointer; transition: all 0.2s;" onmouseover="if(this.classList.contains('slot-empty')) { this.style.borderColor='#f59e0b'; this.style.color='#f59e0b'; }" onmouseout="if(this.classList.contains('slot-empty')) { this.style.borderColor='#1e293b'; this.style.color='#4b5563'; }">
-            + Click to Bind Constraint 2
-        </div>
-        
-        <!-- Socket Socket 3 (Clickable Portal) -->
-        <div class="constraint-slot-wrapper slot-empty" data-slot="2" style="display: flex; align-items: center; justify-content: center; height: 34px; background: transparent; border: 1px dashed #1e293b; border-radius: 4px; color: #4b5563; font-size: 0.75rem; font-style: italic; box-sizing: border-box; cursor: pointer; transition: all 0.2s;" onmouseover="if(this.classList.contains('slot-empty')) { this.style.borderColor='#f59e0b'; this.style.color='#f59e0b'; }" onmouseout="if(this.classList.contains('slot-empty')) { this.style.borderColor='#1e293b'; this.style.color='#4b5563'; }">
-            + Click to Bind Constraint 3
-        </div>
-        
-    </div>
-</div>
-
-
-      </div>
-
-     <!-- SPELL EFFECTS ARCHITECTURE -->
-    <div class="spell-card-attribute effects-metric-box" style="display: flex; flex-direction: column; width: 100%; box-sizing: border-box; margin-top: 12px; padding: 0 4px;">
-    <!-- Section Title Label -->
-    <label style="display: block; font-size: 0.75rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Spell Effects</label>
-    
-    <!-- Unified Container Area -->
-    <div style="width: 100%; box-sizing: border-box;">
-        
-        <!-- Interactive Multi-Select / Search Core Area Wrapper -->
-        <!-- 🔥 THE OVERLAY ANCHOR: Given position: relative so absolute items anchor inside it -->
-        <div class="effect-search-wrapper" style="position: relative; width: 100%; display: flex; align-items: center;">
-            
-            <!-- Your spacious input field that fills the left-column workspace layout completely -->
-            <input type="text" class="effect-search-input" placeholder="Search or click to select basic effect..." style="width: 100%; height: 38px; padding: 0 12px; background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.875rem; box-sizing: border-box;" />
-            
-            <!-- Suggestions box populated via runtime engine script -->
-            <div class="effect-suggestions-dropdown" style="display: none; position: absolute; top: 42px; left: 0; width: 100%; max-height: 200px; overflow-y: auto; background: #1e293b; border: 1px solid #a855f7; border-radius: 4px; z-index: 50; box-shadow: 0 4px 12px rgba(0,0,0,0.5);"></div>
-            
-            <!-- Manual Custom Trigger Token Injector -->
-            <!-- 🧹 LEAN & CLEAN: All styling configurations have been offloaded safely to your CSS sheet rules! -->
-            <button type="button" class="add-custom-effect-btn">+ Custom Spell Effect</button>
-            
-        </div>
-    </div>
-
-    <!-- Active Token Workspace Container -->
-    <div class="active-effects-registry" style="display: flex; flex-direction: column; gap: 6px; width: 100%; margin-top: 8px;">
-        <!-- Chosen rule rows materialise dynamically right here -->
-    </div>
-</div>
-
+<!-- METRICS (TARGETS, SIZE, DISTANCE, DURATION) PANEL -->
+<div class="metrics-horizontal-panel-row" style="display: flex; flex-direction: row; gap: 4px; width: 100%; box-sizing: border-box; flex-wrap: wrap; margin-bottom: 5px;">
       
 <!-- 1. TARGETS COMPACT STRUCTURAL FRAME (32x32 Standard) -->
 <div class="spell-card-attribute targets-metric-box" style="display: flex; flex-direction: column; min-width: 140px; box-sizing: border-box;">
 <label style="display: block; font-size: 0.75rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Targets</label>
-<div style="display: flex; gap: 8px; align-items: center; height: 38px; box-sizing: border-box;">
+<div style="display: flex; gap: 4px; align-items: center; height: 38px; box-sizing: border-box;">
     
 <!-- Your original selection options, perfectly preserved -->
-<select id="target-select" class="sp-data spell-dropdown-metric target-select-field" data-field="targets">
-<option value="1" ${savedData?.targets === "1" ? "selected" : ""}>Undefined</option>
-<option value="2" ${savedData?.targets === "2" ? "selected" : ""}>One Target</option>
-<option value="3" ${savedData?.targets === "3" ? "selected" : ""}>Two Targets</option>
-<option value="4" ${savedData?.targets === "4" ? "selected" : ""}>Three targets</option>
-<option value="5" ${savedData?.targets === "5" ? "selected" : ""}>Five Targets</option>
-<option value="6" ${savedData?.targets === "6" ? "selected" : ""}>Nine targets</option>
+<select id="target-select" class="sp-data spell-dropdown-metric target-select-field" data-field="targets" style="flex-grow: 1;">
+<option value="1" ${savedData?.targets === "1" ? "selected" : ""}>None</option>
+<option value="2" ${savedData?.targets === "2" ? "selected" : ""}>One</option>
+<option value="3" ${savedData?.targets === "3" ? "selected" : ""}>Two</option>
+<option value="4" ${savedData?.targets === "4" ? "selected" : ""}>Three</option>
+<option value="5" ${savedData?.targets === "5" ? "selected" : ""}>Five</option>
+<option value="6" ${savedData?.targets === "6" ? "selected" : ""}>Nine</option>
 <option value="7" ${savedData?.targets === "7" ? "selected" : ""}>Anyone</option>
 </select>
     
@@ -3481,10 +3561,10 @@ function createSpellCard(savedData = null) {
 <!-- 2. SIZE COMPACT STRUCTURAL CONSTELLATION FRAME -->
 <div class="spell-card-attribute size-metric-box" style="display: flex; flex-direction: column; min-width: 140px; box-sizing: border-box;">
 <label style="display: block; font-size: 0.75rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Size</label>
-<div style="display: flex; gap: 8px; align-items: center; height: 38px; box-sizing: border-box;">
+<div style="display: flex; gap: 4px; align-items: center; height: 38px; box-sizing: border-box;">
     
 <!-- Your original Size options scaling cleanly from 1 to 7 -->
-<select class="sp-data spell-dropdown-metric size-select-field" data-field="size">
+<select class="sp-data spell-dropdown-metric size-select-field" data-field="size" style="flex-grow: 1;">
 <option value="1" ${savedData?.size === "1" ? "selected" : ""}>Undefined</option>
 <option value="2" ${savedData?.size === "2" ? "selected" : ""}>Pebble</option>
 <option value="3" ${savedData?.size === "3" ? "selected" : ""}>Humanoid</option>
@@ -3523,15 +3603,15 @@ function createSpellCard(savedData = null) {
 <!-- 3. DISTANCE COMPACT GEOMETRIC CUBE-DIAMOND FRAME -->
 <div class="spell-card-attribute distance-metric-box" style="display: flex; flex-direction: column; min-width: 140px; box-sizing: border-box;">
 <label style="display: block; font-size: 0.75rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Distance</label>
-<div style="display: flex; gap: 8px; align-items: center; height: 38px; box-sizing: border-box;">
+<div style="display: flex; gap: 4px; align-items: center; height: 38px; box-sizing: border-box;">
     
 <!-- Your exact select choices -->
-<select class="sp-data spell-dropdown-metric distance-select-field" data-field="distance">
+<select class="sp-data spell-dropdown-metric distance-select-field" data-field="distance" style="flex-grow: 1;">
 <option value="1" ${savedData?.distance === "1" ? "selected" : ""}>Self</option>
 <option value="2" ${savedData?.distance === "2" ? "selected" : ""}>Touch</option>
 <option value="3" ${savedData?.distance === "3" ? "selected" : ""}>Scene</option>
-<option value="4" ${savedData?.distance === "4" ? "selected" : ""}>Outside Scene</option>
-<option value="5" ${savedData?.distance === "5" ? "selected" : ""}>Far from Scene</option>
+<option value="4" ${savedData?.distance === "4" ? "selected" : ""}>Outside</option>
+<option value="5" ${savedData?.distance === "5" ? "selected" : ""}>Far Away</option>
 <option value="6" ${savedData?.distance === "6" ? "selected" : ""}>Worldwide</option>
 </select>
     
@@ -3562,9 +3642,9 @@ function createSpellCard(savedData = null) {
 <!-- 4. DURATION COMPACT DUAL-SQUARE LAYOUT -->
 <div class="spell-card-attribute duration-metric-box" style="display: flex; flex-direction: column; min-width: 140px; box-sizing: border-box;">
 <label style="display: block; font-size: 0.75rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Duration</label>
-<div style="display: flex; gap: 8px; align-items: center; height: 38px; box-sizing: border-box;">
+<div style="display: flex; gap: 4px; align-items: center; height: 38px; box-sizing: border-box;">
     
-<select class="sp-data spell-dropdown-metric duration-select-field" data-field="duration">
+<select class="sp-data spell-dropdown-metric duration-select-field" data-field="duration" style="flex-grow: 1;">
 <option value="1" ${savedData?.duration === "1" ? "selected" : ""}>Instant</option>
 <option value="2" ${savedData?.duration === "2" ? "selected" : ""}>One Round</option>
 <option value="3" ${savedData?.duration === "3" ? "selected" : ""}>One Scene</option>
@@ -3601,13 +3681,95 @@ function createSpellCard(savedData = null) {
 
 </div>
 </div>
+</div> <!-- 🛑 This closes your metrics-horizontal-panel-row container! -->
+
+      <div class="grid-fields" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+        
+        <div class="field-group">
+          <label>Spell Description</label>
+          <textarea class="sp-data" data-field="desc" style="width: 100%; height: 120px; resize: none; box-sizing: border-box; background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; padding: 8px; font-size: 0.85rem;">${savedData?.desc || ''}</textarea>
+        </div>
+
+  <!-- REVISED INTERACTIVE ARCANE CONSTRAINTS ARCHITECTURE -->
+<div class="spell-card-attribute constraints-metric-box" style="display: flex; flex-direction: column; width: 100%; box-sizing: border-box; margin-top: 12px; padding: 0 4px; position: relative;">
+    
+    <!-- Header tracking row -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; width: 100%;">
+        <label style="display: block; font-size: 0.75rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; margin: 0;">Arcane Constraints</label>
+        <span class="constraint-counter-badge" style="font-size: 0.75rem; color: #a855f7; font-weight: bold; background: #1e1b4b; padding: 2px 8px; border-radius: 4px; border: 1px dashed #a855f7;">0 / 3 Bound</span>
+    </div>
+
+  <!-- 🔥 SHARED FLOATING OVERLAY DROPDOWN MATRIX -->
+  <div class="constraint-suggestions-dropdown" style="display: none; position: absolute; left: 4px; right: 4px; max-height: 220px; overflow-y: auto; background: #1e293b; border: 1px solid #f59e0b; border-radius: 4px; z-index: 60; box-shadow: 0 4px 12px rgba(0,0,0,0.6);"></div>
+
+    <!-- Active Constraints Fixed 3-Slot Reservoir Dock Area -->
+    <div class="active-constraints-registry" style="display: flex; flex-direction: column; gap: 6px; width: 100%; box-sizing: border-box;">
+        
+        <!-- Socket Socket 1 (Clickable Portal) -->
+        <div class="constraint-slot-wrapper slot-empty" data-slot="0" style="display: flex; align-items: center; justify-content: center; height: 34px; background: transparent; border: 1px dashed #1e293b; border-radius: 4px; color: #4b5563; font-size: 0.75rem; font-style: italic; box-sizing: border-box; cursor: pointer; transition: all 0.2s;" onmouseover="if(this.classList.contains('slot-empty')) { this.style.borderColor='#f59e0b'; this.style.color='#f59e0b'; }" onmouseout="if(this.classList.contains('slot-empty')) { this.style.borderColor='#1e293b'; this.style.color='#4b5563'; }">
+            + Click to Bind Constraint 1
+        </div>
+        
+        <!-- Socket Socket 2 (Clickable Portal) -->
+        <div class="constraint-slot-wrapper slot-empty" data-slot="1" style="display: flex; align-items: center; justify-content: center; height: 34px; background: transparent; border: 1px dashed #1e293b; border-radius: 4px; color: #4b5563; font-size: 0.75rem; font-style: italic; box-sizing: border-box; cursor: pointer; transition: all 0.2s;" onmouseover="if(this.classList.contains('slot-empty')) { this.style.borderColor='#f59e0b'; this.style.color='#f59e0b'; }" onmouseout="if(this.classList.contains('slot-empty')) { this.style.borderColor='#1e293b'; this.style.color='#4b5563'; }">
+            + Click to Bind Constraint 2
+        </div>
+        
+        <!-- Socket Socket 3 (Clickable Portal) -->
+        <div class="constraint-slot-wrapper slot-empty" data-slot="2" style="display: flex; align-items: center; justify-content: center; height: 34px; background: transparent; border: 1px dashed #1e293b; border-radius: 4px; color: #4b5563; font-size: 0.75rem; font-style: italic; box-sizing: border-box; cursor: pointer; transition: all 0.2s;" onmouseover="if(this.classList.contains('slot-empty')) { this.style.borderColor='#f59e0b'; this.style.color='#f59e0b'; }" onmouseout="if(this.classList.contains('slot-empty')) { this.style.borderColor='#1e293b'; this.style.color='#4b5563'; }">
+            + Click to Bind Constraint 3
+        </div>
+        
+    </div>
+  </div>
+
+
+</div>
+
+<!-- SPELL EFFECTS AND QUALIFIERS PANEL -->
+<div class="modifiers-uneven-grid" style="display: grid; grid-template-columns: 2.5fr 1fr; gap: 15px; width: 100%; box-sizing: border-box; align-items: flex-start; margin-top: -5px;">
+
+  
+  <!-- SPELL EFFECTS ARCHITECTURE -->
+  <div class="spell-card-attribute effects-metric-box" style="display: flex; flex-direction: column; width: 100%; box-sizing: border-box; margin-top: 0; padding: 0 4px;">
+    <!-- Section Title Label -->
+    <label style="display: block; font-size: 0.75rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Spell Effects</label>
+    
+    <!-- Unified Container Area -->
+    <div style="width: 100%; box-sizing: border-box;">
+        
+        <!-- Interactive Multi-Select / Search Core Area Wrapper -->
+        <!-- 🔥 THE OVERLAY ANCHOR: Given position: relative so absolute items anchor inside it -->
+        <div class="effect-search-wrapper" style="position: relative; width: 100%; display: flex; align-items: center;">
+            
+            <!-- Your spacious input field that fills the left-column workspace layout completely -->
+            <input type="text" class="effect-search-input" placeholder="Search or click to select..." style="width: 100%; height: 38px; padding: 0 12px; background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.875rem; box-sizing: border-box;" />
+            
+            <!-- Suggestions box populated via runtime engine script -->
+            <div class="effect-suggestions-dropdown" style="display: none; position: absolute; top: 42px; left: 0; width: 100%; max-height: 200px; overflow-y: auto; background: #1e293b; border: 1px solid #a855f7; border-radius: 4px; z-index: 50; box-shadow: 0 4px 12px rgba(0,0,0,0.5);"></div>
+            
+            <!-- Manual Custom Trigger Token Injector -->
+            <!-- 🧹 LEAN & CLEAN: All styling configurations have been offloaded safely to your CSS sheet rules! -->
+            <button type="button" class="add-custom-effect-btn">+ Custom Spell Effect</button>
+            
+        </div>
+    </div>
+
+    <!-- Active Token Workspace Container -->
+    <div class="active-effects-registry" style="display: flex; flex-direction: column; gap: 6px; width: 100%; margin-top: 8px;">
+        <!-- Chosen rule rows materialise dynamically right here -->
+    </div>
+  </div>
+
+
+
 
 <!-- REVISED SPECIAL QUALIFIERS COMPACT ARCHITECTURE -->
-<div class="spell-card-attribute qualifiers-metric-box" style="display: flex; flex-direction: column; width: 100%; box-sizing: border-box; margin-top: 12px; padding: 0 4px;">
-    <label style="display: block; font-size: 0.75rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">Special Qualifiers</label>
+<div class="spell-card-attribute qualifiers-metric-box" style="display: flex; flex-direction: column; width: 100%; box-sizing: border-box; margin-top: 0; padding: 0 4px;">
+    <label style="display: block; font-size: 0.75rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">Qualifiers</label>
     
     <!-- Unified 5-Column Side-by-Side Vertical Sliders Row Matrix -->
-    <div class="qualifiers-grid-wrapper">
+    <div class="qualifiers-grid-wrapper" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: transparent; padding: 8px; border: 1px solid #1e293b; border-radius: 4px; width: 100%; box-sizing: border-box;">
         
         <!-- Column 1: Subtle -->
         <div class="qualifier-vertical-track-column">
@@ -3644,7 +3806,7 @@ function createSpellCard(savedData = null) {
     <div class="dormant-selection-drawer-space">
         <!-- Central Select Menu Option Framework -->
         <div id="dormant-dropdown-panel" style="display: none; align-items: center; gap: 12px; width: 100%; padding: 0 4px;">
-            <label style="color: #94a3b8; font-size: 0.8rem; font-weight: 500; white-space: nowrap;">Dormancy Threshold:</label>
+        <!--    <label style="color: #94a3b8; font-size: 0.8rem; font-weight: 500; white-space: nowrap;">Dormancy Threshold:</label> -->
             <select id="dormant-time-matrix" class="sp-data dormant-select-field" data-field="qualifier_dormant_value" style="flex-grow: 1; height: 32px; background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.8rem; padding: 0 4px; cursor: pointer;">
                 <option value="1" ${savedData?.qualifier_dormant_value === "1" ? "selected" : ""}>One Round (+1)</option>
                 <option value="2" ${savedData?.qualifier_dormant_value === "2" ? "selected" : ""}>One Scene (+2)</option>
@@ -3659,6 +3821,7 @@ function createSpellCard(savedData = null) {
     </div>
 </div>
 
+</div> <!-- 🛑 Closes SPELL EFFECTS AND QUALIFIERS PANEL -->
      
     </div>
 
@@ -4557,17 +4720,17 @@ const nonNamedFields = [
       }
 
       // ========================================================================
-      // 🔥 THE ABSOLUTE BACKUP RETAINER: Blocks accidental empty DOM sweep erasures
-      // ========================================================================
-      // If the visible DOM scan returns 0 rows, check if this card previously held valid data
-      if (spellItem.effects.length === 0 && historicalCacheFile._spellsList && historicalCacheFile._spellsList[cardIndex]) {
-          const matchingHistoryCardRecord = historicalCacheFile._spellsList[cardIndex];
-          
-          if (matchingHistoryCardRecord.effects && matchingHistoryCardRecord.effects.length > 0) {
-              console.warn("🛡️ PRESERVATION ENGINE: Restored active effects list array from history baseline cache.");
-              spellItem.effects = matchingHistoryCardRecord.effects; // Forcefully recovers your historical array arrays!
-          }
-      }
+// 🔥 THE ABSOLUTE BACKUP RETAINER: ONLY blocks accidental load-loop drops
+// ========================================================================
+// FIXED: Only restores data if the sheet is in a loading state, preventing deletion locks!
+if (spellItem.effects.length === 0 && window.isSheetLoading === true && historicalCacheFile._spellsList && historicalCacheFile._spellsList[cardIndex]) {
+  const matchingHistoryCardRecord = historicalCacheFile._spellsList[cardIndex];
+  if (matchingHistoryCardRecord.effects && matchingHistoryCardRecord.effects.length > 0) {
+    console.warn("🛡️ PRESERVATION ENGINE: Safety restored active effects array from cache.");
+    spellItem.effects = matchingHistoryCardRecord.effects;
+  }
+}
+
 
       // 🌟 This line pushes the completely packaged, double-shielded card data into your collection!
       spells.push(spellItem);
@@ -6554,6 +6717,13 @@ function recalculateSpellIntricacyScore(targetCard) {
         totalAccumulatedIntricacySum += computedModifierPointsCost;
     });
 
+    console.log("=========================================");
+    console.log("🧪 CALC RADAR | targetCard Element:", targetCard);
+    console.log("🧪 CALC RADAR | Card Intricacy Field:", targetCard?.querySelector('[data-field="intricacy"]'));
+    console.log("🧪 CALC RADAR | Total Effect Rows inside this specific targetCard:", targetCard?.querySelectorAll('.effect-token-row').length);
+    console.log("=========================================");
+
+
     // ========================================================================
     // FIX 2: INITIALIZE THE EFFECTS ACCOUNTING VARIABLE FIRST
     // ========================================================================
@@ -6670,20 +6840,34 @@ function recalculateSpellIntricacyScore(targetCard) {
     totalAccumulatedIntricacySum -= totalConstraintsDeductionPoints;
     console.log(`📉 MATH PROBE 4 | Total Constraints points subtracted: -${totalConstraintsDeductionPoints}. Net running Intricacy sum: ${totalAccumulatedIntricacySum}`);
 
-    // ========================================================================
-    // 🔥 THE CRITICAL DISPLAY INJECTION: PUSH EVERYTHING ONTO THE SCREEN LAST
-    // ========================================================================
-    // Clamp baseline floor safety to 1
-    const finalCalculatedIntricacyCeiling = Math.max(1, totalAccumulatedIntricacySum);
+  // ========================================================================
+  // 🧠 GLOBAL MODIFIER: MIND ATTRIBUTE INTRICACY REDUCTION PASS
+  // ========================================================================
+  // Fetch the global Mind Attribute input value across tabs
+  const mindInputField = document.getElementById('attr-mind');
+  if (mindInputField) {
+    const rawMindScoreValue = parseInt(mindInputField.value) || 0;
+    // Calculate 1 point of reduction for every full 3 points in Mind
+    const mindDeductionBonus = Math.floor(rawMindScoreValue / 3);
     
-    // Writes the final combined math directly to your on-screen input field box
-    fieldIntricacyOutput.value = finalCalculatedIntricacyCeiling;
+    totalAccumulatedIntricacySum -= mindDeductionBonus;
+    
+    console.log(`🧠 MIND BONUS | Mind Score: ${rawMindScoreValue}. Subtracted -${mindDeductionBonus} from Intricacy.`);
+  }
 
-    // Fire your responsive progress trackers and visual display updates
-    if (typeof updateVisualProgressBars === 'function') {
-        updateVisualProgressBars(targetCard);
-    }
+  // ========================================================================
+  // 🔥 THE CRITICAL DISPLAY INJECTION: PUSH EVERYTHING ONTO THE SCREEN LAST
+  // ========================================================================
+  // Clamp baseline floor safety to 1 (Ensures the deduction never drops below 1)
+  const finalCalculatedIntricacyCeiling = Math.max(1, totalAccumulatedIntricacySum);
 
+  // Writes the final combined math directly to your on-screen input field box
+  fieldIntricacyOutput.value = finalCalculatedIntricacyCeiling;
+
+  // Fire your responsive progress trackers and visual display updates
+  if (typeof updateVisualProgressBars === 'function') {
+    updateVisualProgressBars(targetCard);
+  }
 } // 🛑 This curly brace neatly closes your full recalculateSpellIntricacyScore function body!
 
 
@@ -7021,57 +7205,99 @@ function initSpellDropdownCalculators(cardElement, savedData = null) {
   }
 
   function injectConstraintIntoTargetSocket(targetSocketNode, registryKey) {
-    const schemaItem = ELDRITCH_CONSTRAINTS_REGISTRY[registryKey];
-    if (!schemaItem) return;
+  const schemaItem = ELDRITCH_CONSTRAINTS_REGISTRY[registryKey];
+  if (!schemaItem) return;
 
-    // Convert slot frame from empty state to filled amber parameter bounds
-    targetSocketNode.classList.remove('slot-empty');
-    targetSocketNode.dataset.key = registryKey;
-    targetSocketNode.dataset.type = schemaItem.type;
-    targetSocketNode.style.cssText = "display: flex; align-items: center; justify-content: space-between; height: 34px; padding: 0 10px; background: #0f172a; border-left: 3px solid #f59e0b; border-top: 1px solid #1e293b; border-right: 1px solid #1e293b; border-bottom: 1px solid #1e293b; border-radius: 0 4px 4px 0; gap: 8px; box-sizing: border-box; cursor: default;";
+  // Convert slot frame from empty state to filled amber parameter bounds
+  targetSocketNode.classList.remove('slot-empty');
+  targetSocketNode.classList.remove('is-locked'); // Clean reset state on injection
+  targetSocketNode.classList.remove('constraint-flat-row'); // 🧹 Add this clean reset line here!
+  targetSocketNode.dataset.key = registryKey;
+  targetSocketNode.dataset.type = schemaItem.type;
+  targetSocketNode.style.cssText = "display: flex; align-items: center; justify-content: space-between; height: 34px; padding: 0 10px; background: #0f172a; border-left: 3px solid #ef4444; border-top: 1px solid #1e293b; border-right: 1px solid #1e293b; border-bottom: 1px solid #1e293b; border-radius: 0 4px 4px 0; gap: 8px; box-sizing: border-box;";
 
-    let subSelectorMarkup = "";
-    if (schemaItem.type === "time_scaling") {
-        subSelectorMarkup = `<select class="constraint-scale-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f59e0b; font-size: 0.75rem; height: 22px; padding: 0 2px; cursor: pointer;"><option value="1">1 Round (-1)</option><option value="2">2 Rounds (-2)</option><option value="3">3 Rounds (-3)</option><option value="4">4 Rounds (-4)</option><option value="5">5 Rounds (-5)</option><option value="6">6 Rounds (-6)</option><option value="7">7 Rounds (-7)</option></select>`;
-    } else if (schemaItem.type === "hit_fail_scaling") {
-        subSelectorMarkup = `<select class="constraint-scale-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #ef4444; font-size: 0.75rem; height: 22px; padding: 0 2px; cursor: pointer;"><option value="1">Minor (-1)</option><option value="2">Major (-2)</option></select>`;
-    } else if (schemaItem.type === "backlash_scaling") {
-        subSelectorMarkup = `<select class="constraint-scale-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #ef4444; font-size: 0.75rem; height: 22px; padding: 0 2px; cursor: pointer;"><option value="2">Severe (-2)</option><option value="4">Catastrophic (-4)</option></select>`;
-    } else if (schemaItem.type === "challenge_scaling") {
-        subSelectorMarkup = `<select class="constraint-scale-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #a855f7; font-size: 0.75rem; height: 22px; padding: 0 2px; cursor: pointer;"><option value="7">Tier I [Intricacy 7] (-7)</option><option value="8">Tier II [Intricacy 8] (-8)</option><option value="9">Tier III [Intricacy 9] (-9)</option><option value="10">Tier IV [Intricacy 10] (-10)</option><option value="11">Tier V [Intricacy 11] (-11)</option></select>`;
-    } else {
-        subSelectorMarkup = `<span style="color: #94a3b8; font-size: 0.75rem; background: #1e293b; padding: 2px 6px; border-radius: 4px; font-weight: bold;">-${schemaItem.cost}</span>`;
-    }
+  let subSelectorMarkup = "";
+  if (schemaItem.type === "time_scaling") {
+    subSelectorMarkup = `<select class="constraint-scale-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f59e0b; font-size: 0.75rem; height: 22px; padding: 0 2px; cursor: pointer;"><option value="1">1 Round (-1)</option><option value="2">2 Rounds (-2)</option><option value="3">3 Rounds (-3)</option><option value="4">4 Rounds (-4)</option><option value="5">5 Rounds (-5)</option><option value="6">6 Rounds (-6)</option><option value="7">7 Rounds (-7)</option></select>`;
+  } else if (schemaItem.type === "hit_fail_scaling") {
+    subSelectorMarkup = `<select class="constraint-scale-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #ef4444; font-size: 0.75rem; height: 22px; padding: 0 2px; cursor: pointer;"><option value="1">Minor (-1)</option><option value="2">Major (-2)</option></select>`;
+  } else if (schemaItem.type === "backlash_scaling") {
+    subSelectorMarkup = `<select class="constraint-scale-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #ef4444; font-size: 0.75rem; height: 22px; padding: 0 2px; cursor: pointer;"><option value="2">Severe (-2)</option><option value="4">Catastrophic (-4)</option></select>`;
+  } else if (schemaItem.type === "challenge_scaling") {
+    subSelectorMarkup = `<select class="constraint-scale-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #a855f7; font-size: 0.75rem; height: 22px; padding: 0 2px; cursor: pointer;"><option value="7">Tier I [Intricacy 7] (-7)</option><option value="8">Tier II [Intricacy 8] (-8)</option><option value="9">Tier III [Intricacy 9] (-9)</option><option value="10">Tier IV [Intricacy 10] (-10)</option><option value="11">Tier V [Intricacy 11] (-11)</option></select>`;
+  } else {
+    targetSocketNode.classList.add('constraint-flat-row');
 
-    targetSocketNode.innerHTML = `
-      <span class="constraint-row-title" style="color: #f1f5f9; font-size: 0.8rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 55%;">${schemaItem.name}</span>
-      <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;" class="constraint-control-node-area">
-          ${subSelectorMarkup}
-          <button type="button" class="remove-constraint-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer; font-size: 0.85rem; padding: 0 2px; margin: 0; margin-left: 4px;">✕</button>
+    subSelectorMarkup = `<span style="color: #94a3b8; font-size: 0.75rem; background: #1e293b; padding: 2px 6px; border-radius: 4px; font-weight: bold;">-${schemaItem.cost}</span>`;
+  }
+
+  // RESTRUCTURED HTML LAYOUT TO INCLUDE STRUCTURAL TOGGLE PORTALS
+  targetSocketNode.innerHTML = `
+    <span class="constraint-row-title" style="color: #f1f5f9; font-size: 0.8rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 55%;">${schemaItem.name}</span>
+    <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+      <!-- Wraps dropdown forms together -->
+      <div class="constraint-interactive-selectors" style="display: flex; align-items: center;">
+        ${subSelectorMarkup}
       </div>
-    `;
+      <!-- Hidden rating pill tracker -->
+      <div class="locked-pill-display"></div>
+      <button type="button" class="remove-constraint-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer; font-size: 0.85rem; padding: 0 2px; margin: 0; margin-left: 4px;">✕</button>
+    </div>
+  `;
 
-    const dynamicScaleDropdown = targetSocketNode.querySelector('.constraint-scale-selector');
-    if (dynamicScaleDropdown) {
-        dynamicScaleDropdown.addEventListener('change', () => {
-            recalculateSpellIntricacyScore(cardElement);
-            if (typeof saveAllData === 'function') saveAllData();
-        });
-    }
+  const dynamicScaleDropdown = targetSocketNode.querySelector('.constraint-scale-selector');
+  const pillDisplay = targetSocketNode.querySelector(".locked-pill-display");
 
-    targetSocketNode.querySelector('.remove-constraint-btn').addEventListener('click', (e) => {
-        e.stopPropagation();
-        purgeSocketConstraintRow(targetSocketNode);
+  // --- 🔒 INTERACTION LOGIC FOR LOCKING/UNLOCKING ---
+  // Flat items have static values, so we only apply the dynamic toggle logic to scaling constraints
+  if (schemaItem.type && schemaItem.type !== "flat") {
+    
+    // LOCK TRIGGER: Clicking anywhere inside the midnight box closes it down
+    targetSocketNode.addEventListener("click", (e) => {
+      // Safety block to protect click bounds on dropdown choices, clear cross markers, or the active pill
+      if (e.target.closest("select") || e.target.closest(".remove-constraint-btn") || e.target.closest(".locked-pill-display")) {
+        return;
+      }
+      if (targetSocketNode.classList.contains("is-locked")) return;
+
+      // Extract raw data from selection elements
+      const activeSelector = targetSocketNode.querySelector(".constraint-scale-selector");
+      const currentPointsSubtracted = activeSelector ? parseInt(activeSelector.value) : (schemaItem.cost || 0);
+
+      pillDisplay.textContent = `-${currentPointsSubtracted}`;
+      targetSocketNode.classList.add("is-locked");
     });
 
-    refreshConstraintsSocketCap();
-    recalculateSpellIntricacyScore(cardElement);
-    if (typeof saveAllData === 'function') saveAllData();
+    // UNLOCK TRIGGER: Clicking the gray rating pill opens it back up
+    pillDisplay.addEventListener("click", (e) => {
+      e.stopPropagation(); // Stops parent container click bubble
+      targetSocketNode.classList.remove("is-locked");
+    });
   }
+
+  // --- STANDARD SELECTION LISTENER ROUTINES ---
+  if (dynamicScaleDropdown) {
+    dynamicScaleDropdown.addEventListener('change', () => {
+      recalculateSpellIntricacyScore(cardElement);
+      if (typeof saveAllData === 'function') saveAllData();
+    });
+  }
+
+  targetSocketNode.querySelector('.remove-constraint-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    purgeSocketConstraintRow(targetSocketNode);
+  });
+
+  refreshConstraintsSocketCap();
+  recalculateSpellIntricacyScore(cardElement);
+  if (typeof saveAllData === 'function') saveAllData();
+}
+
 
   function purgeSocketConstraintRow(occupiedSocketNode) {
     const slotIdx = occupiedSocketNode.dataset.slot;
     
+    occupiedSocketNode.classList.remove('constraint-flat-row');
     occupiedSocketNode.className = "constraint-slot-wrapper slot-empty";
     delete occupiedSocketNode.dataset.key;
     delete occupiedSocketNode.dataset.type;
@@ -7232,21 +7458,26 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-  // Handle token injection when selecting an item from recommendations
-  document.addEventListener("click", (e) => {
-    const suggestionNode = e.target.closest(".suggestion-item");
-    if (suggestionNode) {
-      const effectKey = suggestionNode.getAttribute("data-key");
-      // Find the inner effects layout block wrapper
-      const parentCardNode = suggestionNode.closest(".effects-metric-box") || suggestionNode.closest(".spell-card-attribute");
+// Handle token injection when selecting an item from recommendations
+document.addEventListener("click", (e) => {
+  const suggestionNode = e.target.closest(".suggestion-item");
+  if (suggestionNode) {
+    const effectKey = suggestionNode.getAttribute("data-key");
+    
+    // 🎯 DIRECT LOOKUP: Find the true outermost dynamic spell card body component shell container
+    const trueCardShell = suggestionNode.closest(".spell-card-body");
+    
+    if (trueCardShell && effectKey) {
+      // Pass the true card body directly into your injection routine to secure references
+      injectEffectRowToken(trueCardShell, effectKey);
       
-      if (parentCardNode && effectKey) {
-        injectEffectRowToken(parentCardNode, effectKey);
-        parentCardNode.querySelector(".effect-suggestions-dropdown").style.display = "none";
-        parentCardNode.querySelector(".effect-search-input").value = "";
-      }
+      // Clean up dropdown boxes using clean, scoped root queries
+      trueCardShell.querySelector(".effect-suggestions-dropdown").style.display = "none";
+      trueCardShell.querySelector(".effect-search-input").value = "";
     }
-  });
+  }
+});
+
 
     // Trigger manual creation window layer arrays on custom button hit actions
     document.addEventListener("click", (e) => {
@@ -7260,34 +7491,35 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
   // Handle row removal actions when clicking trash element icons
-  document.addEventListener("click", (e) => {
-    const removeButtonNode = e.target.closest(".remove-effect-row-btn");
-    if (removeButtonNode) {
-      const rowContainerNode = removeButtonNode.closest(".effect-token-row");
-      if (rowContainerNode) {
-        let currentElement = removeButtonNode;
-        let masterCardContainer = null;
-        while (currentElement && currentElement !== document.body) {
-            if (currentElement.querySelector('[data-field="intricacy"]')) {
-                masterCardContainer = currentElement;
-                break;
-            }
-            currentElement = currentElement.parentElement;
-        }
+document.addEventListener("click", (e) => {
+  const removeButtonNode = e.target.closest(".remove-effect-row-btn");
+  if (removeButtonNode) {
+    const rowContainerNode = removeButtonNode.closest(".effect-token-row");
+    if (rowContainerNode) {
+      
+      // 🎯 Find your true outer card body shell BEFORE deleting any HTML elements
+      const masterCardContainer = removeButtonNode.closest('.spell-card-body');
 
-        rowContainerNode.remove(); // Removes row from screen
+      // 🧹 Remove the row from the screen
+      rowContainerNode.remove(); 
 
-        // TRIGGER THE SAVE: Instantly records the deletion state to local storage
-        if (typeof saveAllData === "function") {
-            saveAllData(); 
-        }
+      // ⏱️ DELAY TRIGGER THE SAVE: Gives the grid time to refresh before scanning
+      if (typeof saveAllData === "function") {
+          setTimeout(() => {
+              saveAllData(); 
+              console.log("💾 Storage pipeline synchronized after deletion.");
+          }, 25); 
+      }
 
-        if (typeof recalculateSpellIntricacyScore === "function" && masterCardContainer) {
-            recalculateSpellIntricacyScore(masterCardContainer);
-        }
+      // Recalculate your math parameters
+      if (typeof recalculateSpellIntricacyScore === "function" && masterCardContainer) {
+          recalculateSpellIntricacyScore(masterCardContainer);
       }
     }
-  });
+  }
+});
+
+
 
   // Centralised Event Observer: Listens to any adjustments made inside an effects row
   document.addEventListener("change", (e) => {
@@ -7392,170 +7624,292 @@ function renderSuggestionsMenu(inputEl, queryText = "") {
 
 // Spawns standard database predefined effect rows inside the active registry area
 function injectEffectRowToken(cardWrapper, effectKey) {
-    const bucket = cardWrapper.querySelector(".active-effects-registry");
-    const item = ELDRITCH_EFFECTS_REGISTRY[effectKey];
-    if (!item || !bucket) return;
+  const bucket = cardWrapper.querySelector(".active-effects-registry");
+  const item = ELDRITCH_EFFECTS_REGISTRY[effectKey];
+  if (!item || !bucket) return;
 
-    const row = document.createElement("div");
-    row.className = "effect-token-row";
-    row.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: #0f172a; border-left: 3px solid #a855f7; border-radius: 0 4px 4px 0; gap: 8px;";
+  const row = document.createElement("div");
+  row.className = "effect-token-row";
+  row.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: #0f172a; border-left: 3px solid #a855f7; border-radius: 0 4px 4px 0; gap: 8px;";
 
-    if (item.type === "flat") {
-        row.innerHTML = `
-            <span class="flat-cost-marker" data-flat-cost="${item.baseCost}" style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500;">${item.name}</span>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="color: #94a3b8; font-size: 0.8rem; background: #1e293b; padding: 2px 6px; border-radius: 4px;">Flat +${item.baseCost}</span>
-                <button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer;">✕</button>
-            </div>`;
-    } else if (item.type === "special_scaling") {
-        // Special Curve Dropdown Builder (Shrinking / Growing)
-        let optionsMarkup = "";
-        const costs = item.costMatrix;
-        for (let r = 1; r <= 4; r++) {
-            optionsMarkup += `<option value="${r}">${r} ${item.label} (+${costs[r]})</option>`;
-        }
-        
-        row.innerHTML = `
-            <span style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500;">${item.name}</span>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <select class="effect-special-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.8rem; height: 26px; padding: 0 4px;">
-                    ${optionsMarkup}
-                </select>
-                <button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer;">✕</button>
-            </div>`;
-    } else if (item.type === "stat_modifier") {
-        // Builds choice rows that track +/- labels for player sheets without altering Intricacy cost direction
-        let optionsMarkup = "";
-        for (let r = 1; r <= 10; r++) {
-            optionsMarkup += `<option value="${r}">${r} ${item.label} (+${r * item.costPerUnit})</option>`;
-        }
-        
-        row.innerHTML = `
-            <span style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500;">${item.name}</span>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <!-- Caster tracking selector: purely text labels for dice calculations later -->
-                <select class="effect-flavor-tracker" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #a855f7; font-size: 0.85rem; font-weight: bold; height: 26px; padding: 0 4px; cursor: pointer;">
-                    <option value="bonus">Bonus (+)</option>
-                    <option value="penalty">Penalty (−)</option>
-                </select>
-                
-                <!-- This standard rank class name keeps the calculation working perfectly automatically -->
-                <select class="effect-rank-selector" data-cost-per-unit="${item.costPerUnit}" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.8rem; height: 26px; padding: 0 4px;">
-                    ${optionsMarkup}
-                </select>
-                <button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer;">✕</button>
-            </div>`;
-        } else if (item.type === "countering_modifier") {
-        // Aligned class labels to match background loop filters
-        row.innerHTML = `
-            <span style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500;">${item.name}</span>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <!-- ALIGNED FIX: Added class="counter-scope-selector" -->
-                <select class="counter-scope-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #a855f7; font-size: 0.8rem; height: 26px; padding: 0 4px; cursor: pointer;">
-                    <option value="2">Unique Effect (+2)</option>
-                    <option value="4">Particular Order (+4)</option>
-                    <option value="6">Any Type (+6)</option>
-                </select>
-                
-                <div style="display: flex; align-items: center; gap: 4px;">
-                    <label style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase;">Base:</label>
-                    <!-- ALIGNED FIX: Added class="counter-base-input" -->
-                    <input type="number" class="counter-base-input" value="0" min="0" max="50" style="width: 45px; background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.8rem; text-align: center; height: 26px;" />
-                </div>
-                <button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer;">✕</button>
-            </div>`;
-        } else if (item.type === "dispelling_modifier") {
-        // Dynamic Dispel Row Builder with an integrated target box input field
-        row.innerHTML = `
-            <span style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500;">${item.name}</span>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <div style="display: flex; align-items: center; gap: 4px; font-size: 0.8rem; line-height: 20px;">
-                    <span style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase; font-weight: 600;">Highest Target Intricacy:</span>
-                    <!-- The input box automatically inherits your compact global CSS design! -->
-                    <input type="number" class="dispel-target-input" value="0" min="0" max="50" />
-                    <span style="color: #a855f7; font-weight: bold; margin-left: 4px;">(+1)</span>
-                </div>
-                <button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer;">✕</button>
-            </div>`;
-    } else {
-        // Standard Multiplier Selector Builder
-        let optionsMarkup = "";
-        for (let r = 1; r <= 10; r++) {
-            optionsMarkup += `<option value="${r}">${r} ${item.label} (+${r * (item.costPerUnit || 0)})</option>`;
-        }
-        
-        row.innerHTML = `
-            <span style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500;">${item.name}</span>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <select class="effect-rank-selector" data-cost-per-unit="${item.costPerUnit || 0}" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.8rem; height: 26px; padding: 0 4px;">
-                    ${optionsMarkup}
-                </select>
-                <button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer;">✕</button>
-            </div>`;
+    // --- HTML TEMPLATES ---
+  if (item.type === "flat") {
+    row.innerHTML = `
+      <!-- 🎯 FIXED: Re-added the tracking class and data cost markers so the calculator can read the score instantly! -->
+      <span class="flat-cost-marker" data-flat-cost="${item.baseCost}" style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500;">${item.name}</span>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="color: #94a3b8; font-size: 0.8rem; background: #1e293b; padding: 2px 6px; border-radius: 4px;">Flat +${item.baseCost}</span>
+        <button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer;">✕</button>
+      </div>`;
+  } 
+  else if (item.type === "special_scaling") {
+    let optionsMarkup = "";
+    const costs = item.costMatrix;
+    for (let r = 1; r <= 4; r++) {
+      optionsMarkup += `<option value="${r}">${r} ${item.label} (+${costs[r]})</option>`;
     }
-
-    // This is the end of your logic block that builds and appends the new row node
-    bucket.appendChild(row);
-    
-    // BULLETPROOF ENHANCEMENT: Climb safely up to find the active container for math updates
-    let activeCardStructure = cardWrapper;
-    while (activeCardStructure && activeCardStructure !== document.body) {
-        if (activeCardStructure.querySelector('[data-field="intricacy"]')) {
-            recalculateSpellIntricacyScore(activeCardStructure);
-            break;
-        }
-        activeCardStructure = activeCardStructure.parentElement;
+    row.innerHTML = `
+      <span style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500;">${item.name}</span>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div class="effect-interactive-selectors" style="display: flex; align-items: center;">
+          <select class="effect-special-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.8rem; height: 26px; padding: 0 4px;">
+            ${optionsMarkup}
+          </select>
+        </div>
+        <div class="locked-pill-display"></div>
+        <button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer;">✕</button>
+      </div>`;
+  } 
+  else if (item.type === "stat_modifier") {
+    let optionsMarkup = "";
+    for (let r = 1; r <= 10; r++) {
+      optionsMarkup += `<option value="${r}">${r} ${item.label} (+${r * item.costPerUnit})</option>`;
     }
-    
-    // 🔥 THE LIVE-GAMEPLAY SAVE HOOK: Saves instantly when creating rows, unless the card is loading on refresh!
-    const isThisCardLoading = cardWrapper.closest('[data-loading="true"]');
-    if (!isThisCardLoading && typeof saveAllData === 'function') {
-        setTimeout(() => {
-            saveAllData();
-        }, 50); // Small delay lets the row render on screen first
-    }    
+    row.innerHTML = `
+      <span style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500;">${item.name}</span>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div class="effect-interactive-selectors" style="display: flex; align-items: center; gap: 8px;">
+          <select class="effect-flavor-tracker" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #a855f7; font-size: 0.85rem; font-weight: bold; height: 26px; padding: 0 4px; cursor: pointer;">
+            <option value="bonus">Bonus (+)</option>
+            <option value="penalty">Penalty (−)</option>
+          </select>
+          <select class="effect-rank-selector" data-cost-per-unit="${item.costPerUnit}" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.8rem; height: 26px; padding: 0 4px;">
+            ${optionsMarkup}
+          </select>
+        </div>
+        <div class="locked-pill-display"></div>
+        <button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer;">✕</button>
+      </div>`;
+  } 
+  else if (item.type === "countering_modifier") {
+    row.innerHTML = `
+      <span style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500;">${item.name}</span>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div class="effect-interactive-selectors" style="display: flex; align-items: center; gap: 8px;">
+          <select class="counter-scope-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #a855f7; font-size: 0.8rem; height: 26px; padding: 0 4px; cursor: pointer;">
+            <option value="2">Unique Effect (+2)</option>
+            <option value="4">Particular Order (+4)</option>
+            <option value="6">Any Type (+6)</option>
+          </select>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <label style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase;">Base:</label>
+            <input type="number" class="counter-base-input" value="0" min="0" max="50" style="width: 45px; background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.8rem; text-align: center; height: 26px;" />
+          </div>
+        </div>
+        <div class="locked-pill-display"></div>
+        <button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer;">✕</button>
+      </div>`;
+  } 
+  else if (item.type === "dispelling_modifier") {
+    row.innerHTML = `
+      <span style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500;">${item.name}</span>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div class="effect-interactive-selectors" style="display: flex; align-items: center; gap: 4px; font-size: 0.8rem; line-height: 20px;">
+          <span style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase; font-weight: 600;">Highest Target Intricacy:</span>
+          <input type="number" class="dispel-target-input" value="0" min="0" max="50" style="width: 45px; background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; text-align: center; height: 26px;" />
+          <span style="color: #a855f7; font-weight: bold; margin-left: 4px;">(+1)</span>
+        </div>
+        <div class="locked-pill-display"></div>
+        <button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer;">✕</button>
+      </div>`;
+  } 
+  else {
+    let optionsMarkup = "";
+    for (let r = 1; r <= 10; r++) {
+      optionsMarkup += `<option value="${r}">${r} ${item.label} (+${r * (item.costPerUnit || 0)})</option>`;
+    }
+    row.innerHTML = `
+      <span style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500;">${item.name}</span>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div class="effect-interactive-selectors" style="display: flex; align-items: center;">
+          <select class="effect-rank-selector" data-cost-per-unit="${item.costPerUnit || 0}" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.8rem; height: 26px; padding: 0 4px;">
+            ${optionsMarkup}
+          </select>
+        </div>
+        <div class="locked-pill-display"></div>
+        <button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer;">✕</button>
+      </div>`;
+  }
+
+  // --- 🔒 INTERACTION LOGIC FOR LOCKING/UNLOCKING ---
+  if (item.type !== "flat") {
+    const pillDisplay = row.querySelector(".locked-pill-display");
+
+    // Click ANYWHERE on the header box to LOCK the row
+    row.addEventListener("click", (e) => {
+      // Safety Block: Do nothing if they clicked a dropdown selector, input field, delete button, or the pill itself
+      if (e.target.closest("select") || e.target.closest("input") || e.target.closest(".remove-effect-row-btn") || e.target.closest(".locked-pill-display")) {
+        return;
+      }
+      if (row.classList.contains("is-locked")) return;
+
+      let dynamicCost = 0;
+
+      // FIXED: Handles flat scaling checking matrices and default standard dynamic scale types properly
+      if (item.type === "special_scaling") {
+        const rank = parseInt(row.querySelector(".effect-special-selector").value) || 1;
+        dynamicCost = item.costMatrix[rank] || 0;
+      } else if (item.type === "stat_modifier") {
+        const rank = parseInt(row.querySelector(".effect-rank-selector").value) || 1;
+        dynamicCost = rank * (item.costPerUnit || 0);
+      } else if (item.type === "countering_modifier") {
+        const scope = parseInt(row.querySelector(".counter-scope-selector").value) || 0;
+        const base = parseInt(row.querySelector(".counter-base-input").value) || 0;
+        dynamicCost = scope + base;
+      } else if (item.type === "dispelling_modifier") {
+        const targetVal = parseInt(row.querySelector(".dispel-target-input").value) || 0;
+        dynamicCost = targetVal + 1;
+      } else if (item.type === "scaling" || !item.type) { // Catches default standard effect scaling row arrays
+        const rank = parseInt(row.querySelector(".effect-rank-selector").value) || 1;
+        dynamicCost = rank * (item.costPerUnit || item.baseCost || 0);
+      }
+
+      pillDisplay.textContent = `Total +${dynamicCost}`;
+      row.classList.add("is-locked");
+    });
+
+    // UNLOCK TRIGGER: Strictly clicking the grey pill opens it back up
+    pillDisplay.addEventListener("click", (e) => {
+      e.stopPropagation(); // Prevents the event from instantly refiring the parent row's lock listener
+      row.classList.remove("is-locked");
+    });
+  }
+
+    // --- APPEND AND RECALCULATE ---
+  bucket.appendChild(row);
+
+//  console.log("🔍 DEBUG PROBE 1 | What is cardWrapper?", cardWrapper);
+//  console.log("🔍 DEBUG PROBE 2 | Does cardWrapper have a parent?", cardWrapper?.parentElement);
+
+  // 🎯 FIXED: Direct, perfect lookup straight to your true outer card body shell element
+const targetCard = cardWrapper.closest('.spell-card-body') || removeButtonNode.closest('.spell-card-body');
+if (targetCard) {
+  recalculateSpellIntricacyScore(targetCard);
 }
 
+
+  // Your save loader logic remains 100% untouched and original:
+  const isThisCardLoading = cardWrapper.closest('[data-loading="true"]');
+  if (!isThisCardLoading && typeof saveAllData === 'function') {
+    setTimeout(() => { saveAllData(); }, 50);
+  }
+}
 
 
 // Spawns complex or free text personal input option fields
 function injectCustomEffectRowToken(cardWrapper) {
-    const bucket = cardWrapper.querySelector(".active-effects-registry");
-    if (!bucket) return;
+  const bucket = cardWrapper.querySelector(".active-effects-registry");
+  if (!bucket) return;
 
-    const row = document.createElement("div");
-    row.className = "effect-token-row";
-    row.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: #0f172a; border-left: 3px solid #f59e0b; border-radius: 0 4px 4px 0; gap: 8px;";
+  const row = document.createElement("div");
+  row.className = "effect-token-row";
+  row.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: #0f172a; border-left: 3px solid #f59e0b; border-radius: 0 4px 4px 0; gap: 8px;";
 
-    row.innerHTML = `
-        <input type="text" class="custom-effect-title-input" placeholder="Type custom spell effect description..." style="flex-grow: 1; background: transparent; border: none; border-bottom: 1px dashed #4b5563; color: #f1f5f9; font-size: 0.85rem; height: 26px; padding: 0;" />
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <label style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase;">Cost:</label>
-            <input type="number" class="custom-intricacy-override" value="0" min="0" max="25" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.8rem; text-align: center;" />
-            <button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer;">✕</button>
-        </div>`;
-
-    // This is the end of your logic block that builds and appends the new row node
-    bucket.appendChild(row);
+  row.innerHTML = `
+    <div class="effect-interactive-selectors" style="flex-grow: 1; display: flex; align-items: center; gap: 8px;">
+      <input type="text" class="custom-effect-title-input" placeholder="Type custom spell effect description..." style="flex-grow: 1; background: transparent; border: none; border-bottom: 1px dashed #4b5563; color: #f1f5f9; font-size: 0.85rem; height: 26px; padding: 0;" />
+      <label style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase;">Cost:</label>
+      <input type="number" class="custom-intricacy-override" value="0" min="0" max="25" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.8rem; text-align: center; height: 26px;" />
+    </div>
+    <span class="custom-title-static-display" style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500; display: none; flex-grow: 1;"></span>
     
-    // BULLETPROOF ENHANCEMENT: Climb safely up to find the active container for math updates
-    let activeCardStructure = cardWrapper;
-    while (activeCardStructure && activeCardStructure !== document.body) {
-        if (activeCardStructure.querySelector('[data-field="intricacy"]')) {
-            recalculateSpellIntricacyScore(activeCardStructure);
-            break;
-        }
-        activeCardStructure = activeCardStructure.parentElement;
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <div class="locked-pill-display"></div>
+      <button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer;">✕</button>
+    </div>`;
+
+  const inputSelectors = row.querySelector(".effect-interactive-selectors");
+  const staticTitleDisplay = row.querySelector(".custom-title-static-display");
+  const textInput = row.querySelector(".custom-effect-title-input");
+  const costInput = row.querySelector(".custom-intricacy-override");
+  const pillDisplay = row.querySelector(".locked-pill-display");
+
+  // Helper function to lock down the element
+  function lockCustomRowState() {
+    if (row.classList.contains("is-locked")) return;
+    
+    const descriptiveText = textInput.value.trim() || "Custom Spell Effect";
+    const customCost = parseInt(costInput.value) || 0;
+
+    staticTitleDisplay.textContent = descriptiveText;
+    pillDisplay.textContent = `Custom +${customCost}`;
+
+    row.classList.add("is-locked");
+    inputSelectors.style.display = "none";
+    staticTitleDisplay.style.display = "inline-block";
+    
+    // 🎯 FIXED: Direct, perfect lookup straight to your true outer card body shell element
+    const targetCard = cardWrapper.closest('.spell-card-body') || removeButtonNode.closest('.spell-card-body');
+    if (targetCard) {
+      recalculateSpellIntricacyScore(targetCard);
+    }
+
+
+  }
+
+  // --- 🔒 LOCK MODES ---
+  // A: Handle clicks anywhere on the webpage to catch outside clicking perfectly
+  const outsideClickListener = (e) => {
+    // If the element was deleted from the page, stop watching for clicks
+    if (!row.isConnected) {
+      document.removeEventListener("click", outsideClickListener);
+      return;
     }
     
-    // 🔥 THE LIVE-GAMEPLAY SAVE HOOK: Saves instantly when creating rows, unless the card is loading on refresh!
-    const isThisCardLoading = cardWrapper.closest('[data-loading="true"]');
-    if (!isThisCardLoading && typeof saveAllData === 'function') {
-        setTimeout(() => {
-            saveAllData();
-        }, 50); // Small delay lets the row render on screen first
+    // If it's already locked, we don't need to check anything
+    if (row.classList.contains("is-locked")) return;
+
+    // CRITICAL FIX: If they click inside this row, check exactly what they targeted
+    if (row.contains(e.target)) {
+      // If they clicked either input box, the delete button, or the pill, leave it wide open!
+      if (e.target === textInput || e.target === costInput || e.target.closest(".remove-effect-row-btn") || e.target.closest(".locked-pill-display")) {
+        return;
+      }
+      // If they clicked the remaining empty row background space, lock it
+      lockCustomRowState();
+    } else {
+      // If they clicked completely outside of this row element, lock it up!
+      lockCustomRowState();
     }
+  };
+  
+  // Attach the smart page-wide click observer
+  document.addEventListener("click", outsideClickListener);
+
+  // B: Pressing Enter inside either input box commits the text and locks it
+  textInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { lockCustomRowState(); }
+  });
+  costInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { lockCustomRowState(); }
+  });
+
+  // --- 🔓 UNLOCK MODE ---
+  // STRICT UNLOCK: Clicking the grey pill is the only way to re-open editing inputs
+  pillDisplay.addEventListener("click", (e) => {
+    e.stopPropagation(); // Stops the page click listener from immediately re-locking the row
+    row.classList.remove("is-locked");
+    inputSelectors.style.display = "flex";
+    staticTitleDisplay.style.display = "none";
+
+    // Instantly focus and highlight all text inside the input field
+    setTimeout(() => {
+      textInput.focus();
+      textInput.select();
+    }, 20);
+  });
+
+  bucket.appendChild(row);
+
+  // Focus immediately when creating a brand new row
+  setTimeout(() => { textInput.focus(); }, 20);
+
+  const isThisCardLoading = cardWrapper.closest('[data-loading="true"]');
+  if (!isThisCardLoading && typeof saveAllData === 'function') {
+    setTimeout(() => { saveAllData(); }, 50);
+  }
 }
+
 
 // ========================================================================
 // GLOBAL METRIC MATHEMATICAL SAFETY NET (CATCHES ALL FROZEN SELECT BOXES)
@@ -7575,6 +7929,19 @@ document.addEventListener('change', (e) => {
       }
     }
   }
+});
+
+// ========================================================================
+// CROSS-TAB AUTO-SYNC: RECALCULATE SPELLS WHEN MIND ATTRIBUTE CHANGES
+// ========================================================================
+document.getElementById('attr-mind')?.addEventListener('input', () => {
+  // Find all active spell card containers on the sheet
+  const activeSpellCards = document.querySelectorAll('.spell-card, [id^="spell-card-"]');
+  
+  // Force a loop update across every single generated spell card element
+  activeSpellCards.forEach(card => {
+    recalculateSpellIntricacyScore(card);
+  });
 });
 
 </script>

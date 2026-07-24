@@ -2324,6 +2324,37 @@ body:has(#token-bank.active-tab) #eldritch-phase-track {
   filter: drop-shadow(0 0 3px rgba(168, 85, 247, 0.75)); /* Unified violet arcane bloom effect */
 }
 
+/* 🎯 THE PERFECT HORIZONTAL FLEX ROW SYMMETRY LOCK */
+.effect-token-row {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Force the text title label to occupy all the open space, pushing everything else right */
+.effect-token-row > span:first-child,
+.effect-token-row > .flat-cost-marker {
+  margin-right: auto !important;
+}
+
+/* Ensure the elements group cleanly along the right wall without overlapping layout slots */
+.effect-token-row .locked-pill-display {
+  margin-right: 12px !important; /* Injects a clean breathing gap between the pill and the button */
+}
+
+.effect-token-row .remove-effect-row-btn {
+  margin-left: 0 !important; /* Locks the red ✕ flush against the absolute right panel frame border edge */
+}
+
+/* 🔒 Freeze the structural layout density of your ledger text labels */
+.effect-ui-label {
+  display: inline-block !important;
+  white-space: nowrap !important; /* Prevents long phrases like TARGET INTRICACY from splitting into two lines! */
+  vertical-align: middle !important;
+}
+
   </style>
 </head>
 <body>
@@ -4790,11 +4821,11 @@ const nonNamedFields = [
               effectInstance.title = customTitleInput.value; // Store the player's custom text description tag
               effectInstance.value = parseInt(customOverrideInput.value) || 0;
           } else if (counterScope && counterBase) {
-              effectInstance.type = "countering";
+              effectInstance.type = "countering_modifier";
               effectInstance.value = parseInt(counterScope.value) || 2;
               effectInstance.baseCost = parseInt(counterBase.value) || 0;
           } else if (dispelTarget) {
-              effectInstance.type = "dispelling";
+              effectInstance.type = "dispelling_modifier";
               effectInstance.value = parseInt(dispelTarget.value) || 0;
           }
 
@@ -7113,11 +7144,31 @@ function initSpellDropdownCalculators(cardElement, savedData = null) {
           
           if (savedEffect.type === "custom") {
               row.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: #0f172a; border-left: 3px solid #f59e0b; border-radius: 0 4px 4px 0; gap: 8px;";
-              row.innerHTML = `<input type="text" class="custom-effect-title-input" value="${savedEffect.title}" style="flex-grow: 1; background: transparent; border: none; border-bottom: 1px dashed #4b5563; color: #f1f5f9; font-size: 0.85rem; height: 26px; padding: 0;" /><div style="display: flex; align-items: center; gap: 8px;"><label style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase;">Cost:</label><input type="number" class="custom-intricacy-override" value="${savedEffect.value}" min="0" max="25" /><button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer;">✕</button></div>`;
+              row.innerHTML = `
+            <!-- Explicit static display span wrapper for your custom title text -->
+            <span class="custom-title-static-display" style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500; display: none;">${savedEffect.title || "Custom Spell Effect"}</span>
+            
+            <!-- 🎯 FIXED WRAPPER: Encloses everything together so your Step 3 insertBefore calculations run perfectly! -->
+            <div class="custom-inputs-group-wrapper" style="display: flex; align-items: center; gap: 8px; flex-grow: 1; justify-content: space-between; width: 100%;">
+                <div style="display: flex; align-items: center; gap: 8px; flex-grow: 1;">
+                    <input type="text" class="custom-effect-title-input" value="${savedEffect.title || ''}" placeholder="Custom title..." style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.85rem; padding: 4px 8px; flex-grow: 1;" />
+                    <span class="effect-ui-label" style="color: #64748b; font-size: 0.75rem; font-weight: bold; text-transform: uppercase;">Cost:</span>
+                    <input type="number" class="custom-intricacy-override" value="${savedEffect.value || 0}" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.85rem; padding: 4px 4px; width: 45px; text-align: center;" />
+                </div>
+                
+                <button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer; padding: 0 4px;">✕</button>
+            </div>
+        `;
+            // Let your save data binder engine know this is an active custom tracking parameter row entry
+            row.setAttribute('data-type', 'custom');
           } 
           else {
               const item = ELDRITCH_EFFECTS_REGISTRY[savedEffect.key];
               if (!item) return;
+
+              // 🎯 THE CRITICAL HOOKS: Stamp the data markers so the global script can read them instantly!
+              row.setAttribute('data-key', savedEffect.key);
+              row.setAttribute('data-type', savedEffect.type || item.type);
 
               if (savedEffect.type === "flat") {
                   row.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: #0f172a; border-left: 3px solid #a855f7; border-radius: 0 4px 4px 0; gap: 8px;";
@@ -7139,13 +7190,13 @@ function initSpellDropdownCalculators(cardElement, savedData = null) {
                   row.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: #0f172a; border-left: 3px solid #a855f7; border-radius: 0 4px 4px 0; gap: 8px;";
                   row.innerHTML = `<span style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500;">${item.name}</span><div style="display: flex; align-items: center; gap: 8px;"><select class="effect-flavor-tracker" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #a855f7; font-size: 0.85rem; font-weight: bold; height: 26px; padding: 0 4px; cursor: pointer;"><option value="bonus" ${savedEffect.flavor === 'bonus' ? 'selected' : ''}>Bonus (+)</option><option value="penalty" ${savedEffect.flavor === 'penalty' ? 'selected' : ''}>Penalty (−)</option></select><select class="effect-rank-selector" data-cost-per-unit="${item.costPerUnit}" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.8rem; height: 26px; padding: 0 4px;">${optionsMarkup}</select><button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer;">✕</button></div>`;
               }
-              else if (savedEffect.type === "countering") {
+              else if (savedEffect.type === "countering_modifier") {
                   row.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: #0f172a; border-left: 3px solid #a855f7; border-radius: 0 4px 4px 0; gap: 8px;";
-                  row.innerHTML = `<span style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500;">${item.name}</span><div style="display: flex; align-items: center; gap: 8px;"><select class="counter-scope-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #a855f7; font-size: 0.8rem; height: 26px; padding: 0 4px; cursor: pointer;"><option value="2" ${savedEffect.value === 2 ? 'selected' : ''}>Unique Effect (+2)</option><option value="4" ${savedEffect.value === 4 ? 'selected' : ''}>Particular Order (+4)</option><option value="6" ${savedEffect.value === 6 ? 'selected' : ''}>Any Type (+6)</option></select><div style="display: flex; align-items: center; gap: 4px; font-size: 0.8rem; line-height: 20px;"><span style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase; font-weight: 600;">Base:</span><input type="number" class="counter-base-input" value="${savedEffect.baseCost || 0}" min="0" max="50" /></div><button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer;">✕</button></div>`;
+                  row.innerHTML = `<span style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500;">${item.name}</span><div style="display: flex; align-items: center; gap: 8px;"><select class="counter-scope-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #a855f7; font-size: 0.8rem; height: 26px; padding: 0 4px; cursor: pointer;"><option value="2" ${savedEffect.value === 2 ? 'selected' : ''}>Unique Effect (+2)</option><option value="4" ${savedEffect.value === 4 ? 'selected' : ''}>Particular Order (+4)</option><option value="6" ${savedEffect.value === 6 ? 'selected' : ''}>Any Type (+6)</option></select><div style="display: flex; align-items: center; gap: 4px; font-size: 0.8rem; line-height: 20px;"><span class="effect-ui-label" style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase; font-weight: 600;">Base:</span><input type="number" class="counter-base-input" value="${savedEffect.baseCost || 0}" min="0" max="50" /></div><button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer;">✕</button></div>`;
               }
-              else if (savedEffect.type === "dispelling") {
+              else if (savedEffect.type === "dispelling_modifier") {
                   row.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: #0f172a; border-left: 3px solid #a855f7; border-radius: 0 4px 4px 0; gap: 8px;";
-                  row.innerHTML = `<span style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500;">${item.name}</span><div style="display: flex; align-items: center; gap: 8px;"><div style="display: flex; align-items: center; gap: 4px; font-size: 0.8rem; line-height: 20px;"><span style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase; font-weight: 600;">Highest Target Intricacy:</span><input type="number" class="dispel-target-input" value="${savedEffect.value || 0}" min="0" max="50" /><span style="color: #a855f7; font-weight: bold; margin-left: 4px;">(+1)</span></div><button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer;">✕</button></div>`;
+                  row.innerHTML = `<span style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500;">${item.name}</span><div style="display: flex; align-items: center; gap: 8px;"><div style="display: flex; align-items: center; gap: 4px; font-size: 0.8rem; line-height: 20px;"><span class="effect-ui-label" style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase; font-weight: 600;">Target Intricacy:</span><input type="number" class="dispel-target-input" value="${savedEffect.value || 0}" min="0" max="50" /><span class="effect-ui-label" style="color: #a855f7; font-weight: bold; margin-left: 4px;">(+1)</span></div><button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer;">✕</button></div>`;
               }
               else {
                   let optionsMarkup = "";
@@ -7156,45 +7207,72 @@ function initSpellDropdownCalculators(cardElement, savedData = null) {
                   row.innerHTML = `<span style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500;">${item.name}</span><div style="display: flex; align-items: center; gap: 8px;"><select class="effect-rank-selector" data-cost-per-unit="${item.costPerUnit}" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.8rem; height: 26px; padding: 0 4px;">${optionsMarkup}</select><button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer;">✕</button></div>`;
               }
           }
-          // ===================================================================
-          // 🔥 THE STRUCTURAL DATA BINDER: Syncs saved options directly on assembly
-          // ===================================================================
-          effectsRegistryContainer.appendChild(row);
 
-          // Force individual input nodes inside this row to match your stored database parameters
-          if (savedEffect.type !== "custom" && savedEffect.type !== "flat") {
-              
-              // A. Standard Scaling Multipliers
-              const rankSelector = row.querySelector('.effect-rank-selector');
-              if (rankSelector && savedEffect.value !== undefined) {
-                  rankSelector.value = savedEffect.value;
-              }
 
-              // B. Special Quadratic Curves (Shrinking/Growing)
-              const specialSelector = row.querySelector('.effect-special-selector');
-              if (specialSelector && savedEffect.value !== undefined) {
-                  specialSelector.value = savedEffect.value;
-              }
+// ===================================================================
+// 🔥 THE STRUCTURAL DATA BINDER: Syncs saved options directly on assembly
+// ===================================================================
+// 🎯 FIXED: ONLY append the missing pill wrapper if the row is NOT a flat effect!
+if (savedEffect.type !== "flat") {
+  const missingPillNode = document.createElement('span');
+  missingPillNode.className = 'locked-pill-display';
+  missingPillNode.style.cssText = 'display: none;';
 
-              // C. Stat Modifiers Sub-Flavor (Bonus vs Penalty)
-              const flavorTracker = row.querySelector('.effect-flavor-tracker');
-              if (flavorTracker && savedEffect.flavor) {
-                  flavorTracker.value = savedEffect.flavor;
-              }
+  const innerMenuWrapper = row.querySelector('div');
+  const existingDeleteButton = innerMenuWrapper?.querySelector('.remove-effect-row-btn') || row.querySelector('.remove-effect-row-btn');
 
-              // D. Countering Scope Parameters & Base Input Costs
-              const counterScope = row.querySelector('.counter-scope-selector');
-              const counterBase = row.querySelector('.counter-base-input');
-              if (counterScope && savedEffect.value !== undefined) counterScope.value = savedEffect.value;
-              if (counterBase && savedEffect.baseCost !== undefined) counterBase.value = savedEffect.baseCost;
+  if (innerMenuWrapper && existingDeleteButton) {
+      innerMenuWrapper.insertBefore(missingPillNode, existingDeleteButton);
+  } else {
+      row.appendChild(missingPillNode);
+  }
+}
 
-              // E. Dispelling Target Intricacy Spinners
-              const dispelTarget = row.querySelector('.dispel-target-input');
-              if (dispelTarget && savedEffect.value !== undefined) {
-                  dispelTarget.value = savedEffect.value;
-              }
-          }
-      }); // 🛑 This bracket closes your savedEffectsArray.forEach loop block!
+effectsRegistryContainer.appendChild(row);
+
+// Force individual input nodes inside this row to match your stored database parameters
+if (savedEffect.type !== "custom" && savedEffect.type !== "flat") {
+  
+  // A. Standard Scaling Multipliers
+  const rankSelector = row.querySelector('.effect-rank-selector');
+  if (rankSelector && savedEffect.value !== undefined) {
+    rankSelector.value = savedEffect.value;
+  }
+  
+  // B. Special Quadratic Curves (Shrinking/Growing)
+  const specialSelector = row.querySelector('.effect-special-selector');
+  if (specialSelector && savedEffect.value !== undefined) {
+     specialSelector.value = savedEffect.value;
+  }
+  
+  // C. Stat Modifiers Sub-Flavor (Bonus vs Penalty)
+  const flavorTracker = row.querySelector('.effect-flavor-tracker');
+  if (flavorTracker && savedEffect.flavor) {
+     flavorTracker.value = savedEffect.flavor;
+  }
+  
+  // D. Countering Scope Parameters & Base Input Costs
+  const counterScope = row.querySelector('.counter-scope-selector');
+  const counterBase = row.querySelector('.counter-base-input');
+  if (counterScope && savedEffect.value !== undefined) counterScope.value = savedEffect.value;
+  if (counterBase && savedEffect.baseCost !== undefined) counterBase.value = savedEffect.baseCost;
+  
+  // E. Dispelling Target Intricacy Spinners
+  const dispelTarget = row.querySelector('.dispel-target-input');
+  if (dispelTarget && savedEffect.value !== undefined) {
+     dispelTarget.value = savedEffect.value;
+  }
+}
+
+// 🎯 FIXED: ONLY fire the auto-lock click macro if the row is a dynamic scaling item!
+setTimeout(() => {
+  if (row && !row.classList.contains('is-locked') && savedEffect.type !== 'flat') {
+      row.click(); 
+  }
+}, 30);
+
+}); // 🛑 This bracket closes your savedEffectsArray.forEach loop block!
+
 
     // =======================================================================
     // 🚀 STEP 2: CONSTRAINTS HYDRATION MATRIX (INSERTION HERE)
@@ -7220,9 +7298,18 @@ function initSpellDropdownCalculators(cardElement, savedData = null) {
                         dynamicScaleDropdownMenuNode.value = savedConstraint.value;
                     }
                 }
-            }
-        });
-    }
+
+                // 🎯 CONSTRAINTS AUTO-LOCK MICRO-DISPATCHER: 
+                // Forces your scaling constraints to package themselves away into compact minus pills instantly on startup!
+                setTimeout(() => {
+                    if (targetSocketSlotNode && !targetSocketSlotNode.classList.contains('is-locked') && savedConstraint.type !== 'flat') {
+                        targetSocketSlotNode.click(); // Fires a background click simulation to turn it into a pill!
+                    }
+                }, 15);
+
+            } // 🛑 Closes: if (targetSocketSlotNode && typeof injectConstraintIntoTargetSocket...)
+        }); // 🛑 Closes: savedConstraintsArray.forEach(...)
+    } // 🛑 Closes: if (savedConstraintsArray && savedConstraintsArray.length > 0)
 
     // Re-verify counter cap allocations and refresh indicators after hydration settles
     if (typeof refreshConstraintsSocketCap === 'function') {
@@ -7360,13 +7447,13 @@ function showConstraintDropdownForSocket(clickedSocketNode) {
 
   let subSelectorMarkup = "";
   if (schemaItem.type === "time_scaling") {
-    subSelectorMarkup = `<select class="constraint-scale-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f59e0b; font-size: 0.75rem; height: 22px; padding: 0 2px; cursor: pointer;"><option value="1">1 Round (-1)</option><option value="2">2 Rounds (-2)</option><option value="3">3 Rounds (-3)</option><option value="4">4 Rounds (-4)</option><option value="5">5 Rounds (-5)</option><option value="6">6 Rounds (-6)</option><option value="7">7 Rounds (-7)</option></select>`;
+    subSelectorMarkup = `<select class="constraint-scale-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f59e0b; font-size: 0.75rem; height: 22px; padding: 0 2px; cursor: pointer;"><option value="1">Two Actions</option><option value="2">One Minute</option><option value="3">One Hour</option><option value="4">One Day</option><option value="5">One Week</option><option value="6">One Month</option><option value="7">One Year</option></select>`;
   } else if (schemaItem.type === "hit_fail_scaling") {
-    subSelectorMarkup = `<select class="constraint-scale-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #ef4444; font-size: 0.75rem; height: 22px; padding: 0 2px; cursor: pointer;"><option value="1">Minor (-1)</option><option value="2">Major (-2)</option></select>`;
+    subSelectorMarkup = `<select class="constraint-scale-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #ef4444; font-size: 0.75rem; height: 22px; padding: 0 2px; cursor: pointer;"><option value="1">Minor(-1)</option><option value="2">Major (-2)</option></select>`;
   } else if (schemaItem.type === "backlash_scaling") {
-    subSelectorMarkup = `<select class="constraint-scale-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #ef4444; font-size: 0.75rem; height: 22px; padding: 0 2px; cursor: pointer;"><option value="2">Severe (-2)</option><option value="4">Catastrophic (-4)</option></select>`;
+    subSelectorMarkup = `<select class="constraint-scale-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #ef4444; font-size: 0.75rem; height: 22px; padding: 0 2px; cursor: pointer;"><option value="2">Minor (-2)</option><option value="4">Major (-2)</option></select>`;
   } else if (schemaItem.type === "challenge_scaling") {
-    subSelectorMarkup = `<select class="constraint-scale-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #a855f7; font-size: 0.75rem; height: 22px; padding: 0 2px; cursor: pointer;"><option value="7">Tier I [Intricacy 7] (-7)</option><option value="8">Tier II [Intricacy 8] (-8)</option><option value="9">Tier III [Intricacy 9] (-9)</option><option value="10">Tier IV [Intricacy 10] (-10)</option><option value="11">Tier V [Intricacy 11] (-11)</option></select>`;
+    subSelectorMarkup = `<select class="constraint-scale-selector" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #a855f7; font-size: 0.75rem; height: 22px; padding: 0 2px; cursor: pointer;"><option value="1">Tier I [Intricacy 7] (-1)</option><option value="2">Tier II [Intricacy 8] (-2)</option><option value="3">Tier III [Intricacy 9] (-3)</option><option value="4">Tier IV [Intricacy 10] (-4)</option><option value="5">Tier V [Intricacy 11] (-5)</option></select>`;
   } else {
     targetSocketNode.classList.add('constraint-flat-row');
 
@@ -7797,6 +7884,9 @@ function injectEffectRowToken(cardWrapper, effectKey) {
   row.className = "effect-token-row";
   row.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: #0f172a; border-left: 3px solid #a855f7; border-radius: 0 4px 4px 0; gap: 8px;";
 
+  // 🧹 HOUSEKEEPING: Set the data-key marker so our new global listener can read the math
+  row.setAttribute('data-key', effectKey);
+
     // --- HTML TEMPLATES ---
   if (item.type === "flat") {
     row.innerHTML = `
@@ -7870,7 +7960,7 @@ function injectEffectRowToken(cardWrapper, effectKey) {
       <span style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500;">${item.name}</span>
       <div style="display: flex; align-items: center; gap: 8px;">
         <div class="effect-interactive-selectors" style="display: flex; align-items: center; gap: 4px; font-size: 0.8rem; line-height: 20px;">
-          <span style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase; font-weight: 600;">Highest Target Intricacy:</span>
+          <span class="effect-ui-label" style="color: #94a3b8; font-size: 0.75rem; text-transform: uppercase; font-weight: 600;">Target Intricacy:</span>
           <input type="number" class="dispel-target-input" value="0" min="0" max="50" style="width: 45px; background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; text-align: center; height: 26px;" />
           <span style="color: #a855f7; font-weight: bold; margin-left: 4px;">(+1)</span>
         </div>
@@ -7900,44 +7990,17 @@ function injectEffectRowToken(cardWrapper, effectKey) {
   if (item.type !== "flat") {
     const pillDisplay = row.querySelector(".locked-pill-display");
 
-    // Click ANYWHERE on the header box to LOCK the row
-    row.addEventListener("click", (e) => {
-      // Safety Block: Do nothing if they clicked a dropdown selector, input field, delete button, or the pill itself
-      if (e.target.closest("select") || e.target.closest("input") || e.target.closest(".remove-effect-row-btn") || e.target.closest(".locked-pill-display")) {
-        return;
-      }
-      if (row.classList.contains("is-locked")) return;
+   // UNLOCK TRIGGER: Strictly clicking the grey pill opens it back up
+//   pillDisplay.addEventListener("click", (e) => {
+//     e.stopPropagation(); // Prevents the event from instantly refiring a parent row's lock listener
+//     row.classList.remove("is-locked");
+//  
+//     // 🎯 FIXED: Re-show your target selectors by restoring their standard layout footprints!
+//     row.querySelectorAll('select, input, .remove-effect-row-btn').forEach(control => {
+//      control.style.display = ""; // Clears the inline 'none' value, letting your CSS handle the display naturally
+//    });
+//  });
 
-      let dynamicCost = 0;
-
-      // FIXED: Handles flat scaling checking matrices and default standard dynamic scale types properly
-      if (item.type === "special_scaling") {
-        const rank = parseInt(row.querySelector(".effect-special-selector").value) || 1;
-        dynamicCost = item.costMatrix[rank] || 0;
-      } else if (item.type === "stat_modifier") {
-        const rank = parseInt(row.querySelector(".effect-rank-selector").value) || 1;
-        dynamicCost = rank * (item.costPerUnit || 0);
-      } else if (item.type === "countering_modifier") {
-        const scope = parseInt(row.querySelector(".counter-scope-selector").value) || 0;
-        const base = parseInt(row.querySelector(".counter-base-input").value) || 0;
-        dynamicCost = scope + base;
-      } else if (item.type === "dispelling_modifier") {
-        const targetVal = parseInt(row.querySelector(".dispel-target-input").value) || 0;
-        dynamicCost = targetVal + 1;
-      } else if (item.type === "scaling" || !item.type) { // Catches default standard effect scaling row arrays
-        const rank = parseInt(row.querySelector(".effect-rank-selector").value) || 1;
-        dynamicCost = rank * (item.costPerUnit || item.baseCost || 0);
-      }
-
-      pillDisplay.textContent = `Total +${dynamicCost}`;
-      row.classList.add("is-locked");
-    });
-
-    // UNLOCK TRIGGER: Strictly clicking the grey pill opens it back up
-    pillDisplay.addEventListener("click", (e) => {
-      e.stopPropagation(); // Prevents the event from instantly refiring the parent row's lock listener
-      row.classList.remove("is-locked");
-    });
   }
 
     // --- APPEND AND RECALCULATE ---
@@ -7961,14 +8024,19 @@ if (targetCard) {
 }
 
 
-// Spawns complex or free text personal input option fields
-function injectCustomEffectRowToken(cardWrapper) {
+// Spawns clean, interactive custom user-defined modifier entries onto the canvas
+function injectCustomEffectRowToken(cardWrapper, defaultTitle = "", defaultCost = 0) {
   const bucket = cardWrapper.querySelector(".active-effects-registry");
   if (!bucket) return;
 
   const row = document.createElement("div");
-  row.className = "effect-token-row";
-  row.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: #0f172a; border-left: 3px solid #f59e0b; border-radius: 0 4px 4px 0; gap: 8px;";
+  
+  // 🎯 FIXED: Align the class name with your standard ledger rows so the global listener can catch its clicks!
+  row.className = "effect-token-row"; 
+  row.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: #0f172a; border-left: 3px solid #6366f1; border-radius: 0 4px 4px 0; gap: 8px;";
+  
+  // 🎯 FIXED: Stamp the explicit identity marker onto the dataset tracking map!
+  row.setAttribute('data-type', 'custom');
 
   row.innerHTML = `
     <div class="effect-interactive-selectors" style="flex-grow: 1; display: flex; align-items: center; gap: 8px;">
@@ -8008,38 +8076,8 @@ function injectCustomEffectRowToken(cardWrapper) {
     if (targetCard) {
       recalculateSpellIntricacyScore(targetCard);
     }
-
-
   }
 
-  // --- 🔒 LOCK MODES ---
-  // A: Handle clicks anywhere on the webpage to catch outside clicking perfectly
-  const outsideClickListener = (e) => {
-    // If the element was deleted from the page, stop watching for clicks
-    if (!row.isConnected) {
-      document.removeEventListener("click", outsideClickListener);
-      return;
-    }
-    
-    // If it's already locked, we don't need to check anything
-    if (row.classList.contains("is-locked")) return;
-
-    // CRITICAL FIX: If they click inside this row, check exactly what they targeted
-    if (row.contains(e.target)) {
-      // If they clicked either input box, the delete button, or the pill, leave it wide open!
-      if (e.target === textInput || e.target === costInput || e.target.closest(".remove-effect-row-btn") || e.target.closest(".locked-pill-display")) {
-        return;
-      }
-      // If they clicked the remaining empty row background space, lock it
-      lockCustomRowState();
-    } else {
-      // If they clicked completely outside of this row element, lock it up!
-      lockCustomRowState();
-    }
-  };
-  
-  // Attach the smart page-wide click observer
-  document.addEventListener("click", outsideClickListener);
 
   // B: Pressing Enter inside either input box commits the text and locks it
   textInput.addEventListener("keydown", (e) => {
@@ -8107,6 +8145,137 @@ document.getElementById('attr-mind')?.addEventListener('input', () => {
   activeSpellCards.forEach(card => {
     recalculateSpellIntricacyScore(card);
   });
+});
+
+// ========================================================================
+// 🔒 DELEGATED GLOBAL OBSERVATION PIPELINE: ARCHITECTURE MANAGEMENT
+// ========================================================================
+document.addEventListener("click", (e) => {
+  // 1. UNLOCK MATRIX: Check exclusively if the user clicked directly on a gray pill wrapper box
+  const pillNode = e.target.closest('.locked-pill-display');
+  if (pillNode) {
+    // 🎯 TARGET BOTH WAYS: Finds the parent container whether it uses the live or the hydrated class name!
+    const parentRow = pillNode.closest('.effect-token-row') || pillNode.closest('.effect-interactive-selectors');
+    if (parentRow && parentRow.classList.contains('is-locked')) {
+      e.stopPropagation(); 
+      
+      parentRow.classList.remove('is-locked');
+      
+      // Re-show inputs and text field structures cleanly
+      parentRow.querySelectorAll('select, input, label, .effect-ui-label, .stepper-arrow-btn').forEach(control => {
+          control.style.display = ""; 
+      });
+
+      // Special custom unlock behavior: restore the interactive input wrapper visibility
+      const customTitleInput = parentRow.querySelector('.custom-effect-title-input');
+      if (customTitleInput) {
+          customTitleInput.style.display = "";
+          if (customTitleInput.parentElement) customTitleInput.parentElement.style.display = "";
+          const staticTitle = parentRow.querySelector('.custom-title-static-display');
+          if (staticTitle) staticTitle.style.display = "none";
+      }
+      return; 
+    }
+  }
+
+  // 2. LOCK MATRIX: Identify if the user targeted an active effects ledger row box item boundary
+  // 🎯 TARGET BOTH WAYS: Captures live rows and hydrated custom row containers simultaneously!
+  const activeRowNode = e.target.closest('.effect-token-row') || e.target.closest('.effect-interactive-selectors');
+  
+  if (activeRowNode) {
+    console.log("⚡ CLICK CAPTURED | Target Element:", e.target);
+    console.log("⚡ CLICK CAPTURED | Row Data-Key:", activeRowNode.dataset.key);
+    console.log("⚡ CLICK CAPTURED | Row Classes:", activeRowNode.className);
+  }
+  if (!activeRowNode) return;
+
+  // STRICT SAFETY SHIELD: Ignore clicks if interacting with operational controls, clears, or pills
+  if (e.target.closest('select') || e.target.closest('input') || e.target.closest('.remove-effect-row-btn') || e.target.closest('.locked-pill-display')) {
+    return;
+  }
+
+  if (activeRowNode.classList.contains('is-locked')) return;
+
+  const pillDisplay = activeRowNode.querySelector('.locked-pill-display');
+  if (!pillDisplay) return;
+
+  let calculatedIntricacyCost = 0;
+
+  // 🎯 3. CUSTOM ENTRIES PASS MODULE (RELOAD-SAFE TRACKING)
+  const customTitleInput = activeRowNode.querySelector('.custom-effect-title-input');
+  
+  if (customTitleInput) {
+    e.stopPropagation();
+
+    const costInput = activeRowNode.querySelector('.custom-intricacy-override') || activeRowNode.querySelector('input[type="number"]');
+    const staticTitle = activeRowNode.querySelector('.custom-title-static-display') || activeRowNode.querySelector('span:first-child');
+    
+    calculatedIntricacyCost = parseInt(costInput?.value) || 0;
+    if (staticTitle) {
+        staticTitle.textContent = customTitleInput.value.trim() || "Custom Spell Effect";
+    }
+    
+    pillDisplay.textContent = `Custom +${calculatedIntricacyCost}`;
+    activeRowNode.classList.add('is-locked');
+    
+    // 🎯 FIXED HIDING METHOD: Explicitly target and sweep away every input control element and text string label
+    // This completely prevents visual overlapping without accidentally hiding the master container row itself!
+    activeRowNode.querySelectorAll('input, select, label, span:not(.locked-pill-display), .stepper-arrow-btn').forEach(control => {
+        // Leave your static title label visible so players can read what the custom spell effect is!
+        if (control !== staticTitle) {
+            control.style.setProperty('display', 'none', 'important');
+        }
+    });
+
+    // Make sure your static text title display turns on cleanly
+    if (staticTitle) {
+        staticTitle.style.setProperty('display', 'inline-block', 'important');
+    }
+
+    // Update master metrics panel score
+    const masterCardContainer = activeRowNode.closest('.spell-card-body');
+    if (masterCardContainer && typeof recalculateSpellIntricacyScore === "function") {
+        recalculateSpellIntricacyScore(masterCardContainer);
+    }
+    return; // 🏁 Safe break out!
+  }
+
+  // 4. PRE-DEFINED SYSTEM DATABASE EFFECTS RULES MATRIX
+  const registryKey = activeRowNode.dataset.key;
+  const itemSchema = ELDRITCH_EFFECTS_REGISTRY[registryKey];
+  if (!itemSchema) return;
+
+  if (itemSchema.type === "special_scaling") {
+    const rank = parseInt(activeRowNode.querySelector(".effect-special-selector")?.value) || 1;
+    calculatedIntricacyCost = itemSchema.costMatrix[rank] || 0;
+  } else if (itemSchema.type === "stat_modifier") {
+    const rank = parseInt(activeRowNode.querySelector(".effect-rank-selector")?.value) || 1;
+    calculatedIntricacyCost = rank * (itemSchema.costPerUnit || 0);
+  } else if (itemSchema.type === "countering_modifier") {
+    const scope = parseInt(activeRowNode.querySelector(".counter-scope-selector")?.value) || 0;
+    const base = parseInt(activeRowNode.querySelector(".counter-base-input")?.value) || 0;
+    calculatedIntricacyCost = scope + base;
+  } else if (itemSchema.type === "dispelling_modifier") {
+    const targetVal = parseInt(activeRowNode.querySelector(".dispel-target-input")?.value) || 0;
+    calculatedIntricacyCost = targetVal + 1;
+  } else if (itemSchema.type === "scaling" || !itemSchema.type) {
+    const rank = parseInt(activeRowNode.querySelector(".effect-rank-selector")?.value) || 1;
+    calculatedIntricacyCost = rank * (itemSchema.costPerUnit || itemSchema.baseCost || 0);
+  }
+
+  // 5. Package row data away smoothly into the pill profile state
+  pillDisplay.textContent = `Total +${calculatedIntricacyCost}`;
+  activeRowNode.classList.add('is-locked');
+
+  // Target all active controls and custom labels inside to clean up the workspace area
+  activeRowNode.querySelectorAll('select, input, label, .effect-ui-label, .stepper-arrow-btn').forEach(control => {
+      control.style.setProperty('display', 'none', 'important');
+  });
+
+  const masterCardContainer = activeRowNode.closest('.spell-card-body');
+  if (masterCardContainer && typeof recalculateSpellIntricacyScore === "function") {
+      recalculateSpellIntricacyScore(masterCardContainer);
+  }
 });
 
 </script>

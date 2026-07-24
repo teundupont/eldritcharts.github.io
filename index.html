@@ -2139,7 +2139,7 @@ body:has(#token-bank.active-tab) #eldritch-phase-track {
 .qualifiers-metric-box {
   width: 100% !important;
   max-width: 260px !important; /* Forces the box to stay perfectly narrow and compact */
-  position: relative;          /* Creates an anchor point for our floating drawer */
+  position: relative !important; /* Creates an anchor point for our floating drawer */
 }
 
 /* 🧊 Upgrade the grid wrapper layout to look balanced down to the baseline */
@@ -2285,6 +2285,43 @@ body:has(#token-bank.active-tab) #eldritch-phase-track {
 .constraint-slot-wrapper.is-locked .constraint-interactive-selectors {
   display: none !important;
   width: 0 !important;      /* Forces the hidden container to give up its layout space completely */
+}
+
+/* --- Special Qualifiers SVG Pip Lighting Rules --- */
+/* When a qualifier checkbox is flipped ON... */
+.qualifier-toggle-checkbox:checked ~ .qualifier-pip-gauge .gauge-trace-line {
+  stroke: #a855f7 !important; /* Glow the baseline background line a rich violet */
+}
+
+.qualifier-toggle-checkbox:checked ~ .qualifier-pip-gauge .pip-node {
+  fill: #c084fc !important;   /* Ignite the indicator node dots neon purple */
+  filter: drop-shadow(0 0 3px rgba(168, 85, 247, 0.75)); /* Apply a magical arcane radiance */
+}
+
+/* --- Dormant Advanced Circuit Lighting System --- */
+/* 1. When the master slider is active, illuminate the baseline circuit track line path */
+.dormant-toggle-button:checked ~ .dormant-pip-gauge .gauge-trace-path {
+  /* 🎯 CHANGED: Swapped from blue to match your flat qualifiers line color exactly! */
+  stroke: #a855f7 !important; 
+}
+
+/* 2. Base unlit state for dormant circular nodes */
+.dormant-pip-gauge .dormant-node {
+  fill: #27272a;
+}
+
+/* 3. 🎯 THE SEQUENTIAL IGNITION LOOP: Lights up nodes step-by-step only if the slider is checked */
+.dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="1"] .pip-tier-1,
+.dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="2"] .pip-tier-1, .dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="2"] .pip-tier-2,
+.dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="3"] .pip-tier-1, .dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="3"] .pip-tier-2, .dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="3"] .pip-tier-3,
+.dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="4"] .pip-tier-1, .dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="4"] .pip-tier-2, .dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="4"] .pip-tier-3, .dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="4"] .pip-tier-4,
+.dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="5"] .pip-tier-1, .dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="5"] .pip-tier-2, .dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="5"] .pip-tier-3, .dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="5"] .pip-tier-4, .dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="5"] .pip-tier-5,
+.dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="6"] .pip-tier-1, .dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="6"] .pip-tier-2, .dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="6"] .pip-tier-3, .dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="6"] .pip-tier-4, .dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="6"] .pip-tier-5, .dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="6"] .pip-tier-6,
+.dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="7"] .pip-tier-1, .dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="7"] .pip-tier-2, .dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="7"] .pip-tier-3, .dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="7"] .pip-tier-4, .dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="7"] .pip-tier-5, .dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="7"] .pip-tier-6, .dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="7"] .pip-tier-7,
+.dormant-toggle-button:checked ~ .dormant-pip-gauge[data-active-tier="8"] .dormant-node {
+  /* 🎯 CHANGED: Swapped from neon blue to match your flat qualifiers neon glow dots color! */
+  fill: #c084fc !important; 
+  filter: drop-shadow(0 0 3px rgba(168, 85, 247, 0.75)); /* Unified violet arcane bloom effect */
 }
 
   </style>
@@ -3337,25 +3374,25 @@ const ELDRITCH_CONSTRAINTS_REGISTRY = {
   extra_time:                     { name: "Taking Extra Time", type: "time_scaling" },
   // --- Category: Misfortunes ---
   misfortune_fail:                { name: "Misfortune on Failure", type: "flat", cost: 1 },
-  misfortune_always:              { name: "Misfortune regardless of success", type: "flat", cost: 2 },
+  misfortune_always:              { name: "Misfortune Every Time", type: "flat", cost: 2 },
   // --- Category: Taking Hits ---
-  hits_fail:                      { name: "Taking Hits on Failure", type: "hit_fail_scaling" },
-  hits_backlash:                  { name: "Taking Hits as Backlash", type: "backlash_scaling" },
+  hits_fail:                      { name: "Take Hits on Failure", type: "hit_fail_scaling" },
+  hits_backlash:                  { name: "Take Hits as Backlash", type: "backlash_scaling" },
   // --- Category: Selfish ---
   selfish_use:                    { name: "Can only be used on oneself", type: "flat", cost: 1 },
   // --- Category: Dependent ---
-  dep_mundane:                    { name: "Requires mundane/common resource", type: "flat", cost: 1 },
-  dep_precious:                   { name: "Requires rare precious material", type: "flat", cost: 2 },
-  dep_unique_item:                { name: "Requires a Unique Item as Focus", type: "flat", cost: 2 },
-  dep_unique_being:               { name: "Requires a Unique Being as Focus",type: "flat", cost: 2 },
-  dep_unique_both:                { name: "Requires a Unique Item & Being as Focus", type: "flat", cost: 3 },
-  dep_ultimate_effort:            { name: "Requires Ultimate Effort Active", type: "flat", cost: 3 },
-  dep_art_active:                 { name: "Requires another Eldritch Art active", type: "flat", cost: 2 },
-  dep_terrain:                    { name: "Requires specific terrain type", type: "flat", cost: 2 },
-  dep_challenge:                  { name: "Requires performing a Challenge", type: "challenge_scaling" },
+  dep_mundane:                    { name: "Mundane/Common Resource", type: "flat", cost: 1 },
+  dep_precious:                   { name: "Rare or Precious Material", type: "flat", cost: 2 },
+  dep_unique_item:                { name: "Unique Item as Focus", type: "flat", cost: 2 },
+  dep_unique_being:               { name: "Unique Being as Focus",type: "flat", cost: 2 },
+  dep_unique_both:                { name: "Unique Item & Being as Focus", type: "flat", cost: 3 },
+  dep_ultimate_effort:            { name: "Ultimate Effort Active", type: "flat", cost: 3 },
+  dep_art_active:                 { name: "Requires Active Art", type: "flat", cost: 2 },
+  dep_terrain:                    { name: "Relies on Terrain", type: "flat", cost: 2 },
+  dep_challenge:                  { name: "Requires Challenge", type: "challenge_scaling" },
   // --- Category: Cooperative ---
-  coop_additional_caster:         { name: "Requires Additional Caster", type: "flat", cost: 3 },
-  coop_same_art_caster:           { name: "Requires Additional Caster (Same Art known)", type: "flat", cost: 6 }
+  coop_additional_caster:         { name: "Additional Caster Required", type: "flat", cost: 3 },
+  coop_same_art_caster:           { name: "Additional Caster with Same Art Requried", type: "flat", cost: 6 }
 };
 
 // ========================================================================
@@ -3772,58 +3809,151 @@ function createSpellCard(savedData = null) {
     <div class="qualifiers-grid-wrapper" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: transparent; padding: 8px; border: 1px solid #1e293b; border-radius: 4px; width: 100%; box-sizing: border-box;">
         
         <!-- Column 1: Subtle -->
-        <div class="qualifier-vertical-track-column">
-            <span class="qualifier-slider-label">Subtle</span>
-            <input type="checkbox" class="sp-data qualifier-toggle qualifier-toggle-checkbox" data-field="qualifier_subtle" data-cost="3" ${savedData?.qualifier_subtle ? 'checked' : ''} />
+        <div class="qualifier-vertical-track-column" style="display: flex; flex-direction: column; align-items: center; flex: 1; text-align: center; position: relative;">
+          <span class="qualifier-slider-label">Subtle</span>
+  
+          <!-- 🎯 HORIZONTAL ALIGNMENT ROW: Pairs the slider and its right-side pips together side-by-side -->
+          <div style="display: flex; flex-direction: row; align-items: center; gap: 8px; justify-content: center; width: 100%; box-sizing: border-box;">
+    
+           <input type="checkbox" class="sp-data qualifier-toggle qualifier-toggle-checkbox" data-field="qualifier_subtle" data-cost="3" ${savedData?.qualifier_subtle ? 'checked' : ''} />
+    
+           <!-- 🎯 THE SUBTLE (+3) COST PIP GAUGE: Tall 38px line with top, middle, and bottom dots sitting right next to the toggle -->
+           <svg class="qualifier-pip-gauge" viewBox="0 0 12 32" width="12" height="32" style="overflow: visible; flex-shrink: 0;">
+             <!-- Core anchoring baseline trace line -->
+             <line x1="6" y1="2" x2="6" y2="30" stroke="#334155" stroke-width="1.5" stroke-linecap="round" class="gauge-trace-line" style="transition: stroke 0.2s;" />
+      
+             <!-- 3 Stacked Cost Indicator Circles (Top, Middle, Bottom) -->
+             <circle cx="6" cy="2" r="2.5" class="pip-node node-top" style="fill: #334155; transition: fill 0.2s, filter 0.2s;" />
+             <circle cx="6" cy="16" r="2.5" class="pip-node node-middle" style="fill: #334155; transition: fill 0.2s, filter 0.2s;" />
+             <circle cx="6" cy="30" r="2.5" class="pip-node node-bottom" style="fill: #334155; transition: fill 0.2s, filter 0.2s;" />
+           </svg>
+
+          </div> <!-- End of horizontal alignment row -->
         </div>
+
 
         <!-- Column 2: Variable -->
-        <div class="qualifier-vertical-track-column">
-            <span class="qualifier-slider-label">Variable</span>
-            <input type="checkbox" class="sp-data qualifier-toggle qualifier-toggle-checkbox" data-field="qualifier_variable" data-cost="2" ${savedData?.qualifier_variable ? 'checked' : ''} />
+        <div class="qualifier-vertical-track-column" style="display: flex; flex-direction: column; align-items: center; flex: 1; text-align: center; position: relative;">
+          <span class="qualifier-slider-label">Variable</span>
+  
+          <!-- Horizontal flex row matching your Subtle alignment structure -->
+          <div style="display: flex; flex-direction: row; align-items: center; gap: 8px; justify-content: center; width: 100%; box-sizing: border-box;">
+    
+           <input type="checkbox" class="sp-data qualifier-toggle qualifier-toggle-checkbox" data-field="qualifier_variable" data-cost="2" ${savedData?.qualifier_variable ? 'checked' : ''} />
+    
+           <!-- 🎯 RE-BALANCED COMPACT VARIABLE (+2) PIP GAUGE: Tighter, visible line with full-sized dots -->
+           <svg class="qualifier-pip-gauge" viewBox="0 0 12 16" width="12" height="16" style="overflow: visible; flex-shrink: 0;">
+             <!-- Anchoring line with a visible space gap between circle shapes -->
+             <line x1="6" y1="2" x2="6" y2="14" stroke="#334155" stroke-width="1.5" stroke-linecap="round" class="gauge-trace-line" style="transition: stroke 0.2s;" />
+  
+             <!-- 2 Full-Sized Endpoint Indicator Circles -->
+             <circle cx="6" cy="2" r="2.5" class="pip-node node-top" style="fill: #334155; transition: fill 0.2s, filter 0.2s;" />
+             <circle cx="6" cy="14" r="2.5" class="pip-node node-bottom" style="fill: #334155; transition: fill 0.2s, filter 0.2s;" />
+            </svg>
+
+
+          </div>
         </div>
+
+
 
         <!-- Column 3: Mobile -->
-        <div class="qualifier-vertical-track-column">
-            <span class="qualifier-slider-label">Mobile</span>
-            <input type="checkbox" class="sp-data qualifier-toggle qualifier-toggle-checkbox" data-field="qualifier_mobile" data-cost="3" ${savedData?.qualifier_mobile ? 'checked' : ''} />
+        <div class="qualifier-vertical-track-column" style="display: flex; flex-direction: column; align-items: center; flex: 1; text-align: center; position: relative;">
+           <span class="qualifier-slider-label">Mobile</span>
+  
+           <div style="display: flex; flex-direction: row; align-items: center; gap: 8px; justify-content: center; width: 100%; box-sizing: border-box;">
+             <input type="checkbox" class="sp-data qualifier-toggle qualifier-toggle-checkbox" data-field="qualifier_mobile" data-cost="3" ${savedData?.qualifier_mobile ? 'checked' : ''} />
+    
+             <!-- 🎯 MOBILE (+3) COST PIP GAUGE: Taller line with top, middle, and bottom dots -->
+             <svg class="qualifier-pip-gauge" viewBox="0 0 12 32" width="12" height="32" style="overflow: visible; flex-shrink: 0;">
+               <!-- Core anchoring baseline trace line -->
+               <line x1="6" y1="2" x2="6" y2="30" stroke="#334155" stroke-width="1.5" stroke-linecap="round" class="gauge-trace-line" style="transition: stroke 0.2s;" />
+      
+               <!-- 3 Stacked Cost Indicator Circles (Top, Middle, Bottom) -->
+               <circle cx="6" cy="2" r="2.5" class="pip-node node-top" style="fill: #334155; transition: fill 0.2s, filter 0.2s;" />
+               <circle cx="6" cy="16" r="2.5" class="pip-node node-middle" style="fill: #334155; transition: fill 0.2s, filter 0.2s;" />
+               <circle cx="6" cy="30" r="2.5" class="pip-node node-bottom" style="fill: #334155; transition: fill 0.2s, filter 0.2s;" />
+              </svg>
+           </div>
         </div>
+
 
         <!-- Column 4: Malleable -->
-        <div class="qualifier-vertical-track-column">
-            <span class="qualifier-slider-label">Malleable</span>
+        <div class="qualifier-vertical-track-column" style="display: flex; flex-direction: column; align-items: center; flex: 1; text-align: center; position: relative;">
+          <span class="qualifier-slider-label">Pliable</span>
+  
+          <div style="display: flex; flex-direction: row; align-items: center; gap: 8px; justify-content: center; width: 100%; box-sizing: border-box;">
             <input type="checkbox" class="sp-data qualifier-toggle qualifier-toggle-checkbox" data-field="qualifier_malleable" data-cost="2" ${savedData?.qualifier_malleable ? 'checked' : ''} />
+    
+            <!-- 🎯 MALLEABLE (+2) COST PIP GAUGE: Compact 16px line with top and bottom dots -->
+            <svg class="qualifier-pip-gauge" viewBox="0 0 12 16" width="12" height="16" style="overflow: visible; flex-shrink: 0;">
+              <line x1="6" y1="2" x2="6" y2="14" stroke="#334155" stroke-width="1.5" stroke-linecap="round" class="gauge-trace-line" style="transition: stroke 0.2s;" />
+      
+              <circle cx="6" cy="2" r="2.5" class="pip-node node-top" style="fill: #334155; transition: fill 0.2s, filter 0.2s;" />
+              <circle cx="6" cy="14" r="2.5" class="pip-node node-bottom" style="fill: #334155; transition: fill 0.2s, filter 0.2s;" />
+            </svg>
+          </div>
         </div>
 
-        <!-- Column 5: Dormant -->
-        <div class="qualifier-vertical-track-column">
-            <span class="qualifier-slider-label">Dormant</span>
-            <input type="checkbox" id="dormant-master-toggle" class="sp-data qualifier-toggle qualifier-toggle-checkbox" data-field="qualifier_dormant" data-cost="0" ${savedData?.qualifier_dormant ? 'checked' : ''} />
-        </div>
-    </div>
 
-    <!-- CLEAN RESERVED HEIGHT DRAWER DRAWER (No background text strings or border elements visible on boot) -->
-    <div class="dormant-selection-drawer-space">
-        <!-- Central Select Menu Option Framework -->
-        <div id="dormant-dropdown-panel" style="display: none; align-items: center; gap: 12px; width: 100%; padding: 0 4px;">
-        <!--    <label style="color: #94a3b8; font-size: 0.8rem; font-weight: 500; white-space: nowrap;">Dormancy Threshold:</label> -->
-            <select id="dormant-time-matrix" class="sp-data dormant-select-field" data-field="qualifier_dormant_value" style="flex-grow: 1; height: 32px; background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.8rem; padding: 0 4px; cursor: pointer;">
-                <option value="1" ${savedData?.qualifier_dormant_value === "1" ? "selected" : ""}>One Round (+1)</option>
-                <option value="2" ${savedData?.qualifier_dormant_value === "2" ? "selected" : ""}>One Scene (+2)</option>
-                <option value="3" ${savedData?.qualifier_dormant_value === "3" ? "selected" : ""}>One Hour (+3)</option>
-                <option value="4" ${savedData?.qualifier_dormant_value === "4" ? "selected" : ""}>One Day (+4)</option>
-                <option value="5" ${savedData?.qualifier_dormant_value === "5" ? "selected" : ""}>One Week (+5)</option>
-                <option value="6" ${savedData?.qualifier_dormant_value === "6" ? "selected" : ""}>One Month (+6)</option>
-                <option value="7" ${savedData?.qualifier_dormant_value === "7" ? "selected" : ""}>One Year (+7)</option>
-                <option value="8" ${savedData?.qualifier_dormant_value === "8" ? "selected" : ""}>Permanent (+8)</option>
-            </select>
-        </div>
-    </div>
+<!-- ======================================================================== -->
+<!-- COLUMN 5: DORMANT COMPONENT (WITH FLOATING CIRCUITS MATRIX)               -->
+<!-- ======================================================================== -->
+<div class="qualifier-vertical-track-column" style="display: flex; flex-direction: column; align-items: center; flex: 1; text-align: center; position: relative; box-sizing: border-box;">
+  <span class="qualifier-slider-label">Dormant</span>
+  
+  <!-- MAINTAINED: Your original data inputs and core trigger classes in their exact, centered placement -->
+  <input type="checkbox" id="dormant-master-toggle" class="sp-data qualifier-toggle qualifier-toggle-checkbox dormant-toggle-button" data-field="qualifier_dormant" data-cost="0" ${savedData?.qualifier_dormant ? 'checked' : ''} style="margin-top: 4px;" />
+  
+  <!-- 🎯 FIXED SVG POSITIONING: Raised up and given position: absolute so its 74px boundary box never squeezes your columns! -->
+  <svg class="dormant-pip-gauge" viewBox="0 0 74 24" width="74" height="24" data-active-tier="${savedData?.qualifier_dormant_value || '1'}"
+       style="position: absolute; left: 52px; top: 29px; overflow: visible; flex-shrink: 0; pointer-events: none; z-index: 5;">
+    <!-- Continuous 90-degree geometric line trace path -->
+    <path d="M 3.5,3.5 L 13.5,3.5 L 13.5,20.5 L 23.5,20.5 L 23.5,3.5 L 33.5,3.5 L 33.5,20.5 L 43.5,20.5" 
+          stroke="#334155" stroke-width="1.5" stroke-linejoin="miter" fill="none" class="gauge-trace-path" style="transition: stroke 0.2s;" />
+    
+    <!-- 8 Sequential Runic Node Circles matching options 1-8 -->
+    <circle cx="3.5" cy="3.5" r="2.5" class="dormant-node pip-tier-1" style="fill: #334155; transition: all 0.2s;" />
+    <circle cx="13.5" cy="3.5" r="2.5" class="dormant-node pip-tier-2" style="fill: #334155; transition: all 0.2s;" />
+    <circle cx="13.5" cy="20.5" r="2.5" class="dormant-node pip-tier-3" style="fill: #334155; transition: all 0.2s;" />
+    <circle cx="23.5" cy="20.5" r="2.5" class="dormant-node pip-tier-4" style="fill: #334155; transition: all 0.2s;" />
+    <circle cx="23.5" cy="3.5" r="2.5" class="dormant-node pip-tier-5" style="fill: #334155; transition: all 0.2s;" />
+    <circle cx="33.5" cy="3.5" r="2.5" class="dormant-node pip-tier-6" style="fill: #334155; transition: all 0.2s;" />
+    <circle cx="33.5" cy="20.5" r="2.5" class="dormant-node pip-tier-7" style="fill: #334155; transition: all 0.2s;" />
+    <circle cx="43.5" cy="20.5" r="2.5" class="dormant-node pip-tier-8" style="fill: #334155; transition: all 0.2s;" />
+  </svg>
 </div>
+
+</div> <!-- 🛑 Closes your stabilizers/qualifiers-grid-wrapper layout row container! -->
+
+<!-- ======================================================================== -->
+<!-- 🎯 ANCHORED SELECTION DRAWER: Nested directly inside the Qualifiers Box  -->
+<!-- ======================================================================== -->
+<!-- 🎯 RE-POSITIONED SELECTION DRAWER: Locked perfectly flush from side-to-side with the bottom panel border -->
+<div class="dormant-selection-drawer-space" style="position: absolute !important; bottom: -16px; left: 1px; right: 1px; z-index: 50; box-sizing: border-box;">
+  <!-- MAINTAINED: Exact div IDs and structural parameters for your collapsible panel -->
+  <div id="dormant-dropdown-panel" style="display: none; align-items: center; width: 100%; padding: 0;">
+    <!-- MAINTAINED: Exact menu values and conditional selection tracking code strings -->
+    <select id="dormant-time-matrix" class="sp-data dormant-select-field" data-field="qualifier_dormant_value" style="width: 100%; height: 28px; background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.75rem; padding: 0 4px; cursor: pointer; box-sizing: border-box;">
+      <option value="1" ${savedData?.qualifier_dormant_value === "1" ? "selected" : ""}>One Round (+1)</option>
+      <option value="2" ${savedData?.qualifier_dormant_value === "2" ? "selected" : ""}>One Scene (+2)</option>
+      <option value="3" ${savedData?.qualifier_dormant_value === "3" ? "selected" : ""}>One Hour (+3)</option>
+      <option value="4" ${savedData?.qualifier_dormant_value === "4" ? "selected" : ""}>One Day (+4)</option>
+      <option value="5" ${savedData?.qualifier_dormant_value === "5" ? "selected" : ""}>One Week (+5)</option>
+      <option value="6" ${savedData?.qualifier_dormant_value === "6" ? "selected" : ""}>One Month (+6)</option>
+      <option value="7" ${savedData?.qualifier_dormant_value === "7" ? "selected" : ""}>One Year (+7)</option>
+      <option value="8" ${savedData?.qualifier_dormant_value === "8" ? "selected" : ""}>Permanent (+8)</option>
+    </select>
+  </div>
+</div>
+
+</div> <!-- 🛑 Closes your master .qualifiers-metric-box structural column wrapper element! -->
+
+
 
 </div> <!-- 🛑 Closes SPELL EFFECTS AND QUALIFIERS PANEL -->
      
-    </div>
+    </div> <!-- Closes LEFT WORKSPACE COLUMN -->
 
     <!-- RIGHT SIDEBAR FLANK: ACTIVE COMBAT ENGINE COCKPIT (1x weight) -->
     <div class="spell-workspace-right" style="flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 12px; background: transparent; border: none; padding: 0px; box-sizing: border-box; align-items: flex-end;">
@@ -7138,51 +7268,63 @@ function initSpellDropdownCalculators(cardElement, savedData = null) {
     counterBadge.textContent = `${filledSlotsCount} / 3 Bound`;
   }
 
-  // Float and build options list relative to the clicked socket element coordinates
-  function showConstraintDropdownForSocket(clickedSocketNode) {
-    if (!constraintDropdown) return;
-    activeTargetSocketNode = clickedSocketNode;
-    constraintDropdown.innerHTML = "";
+// Float and build options list relative to the clicked socket element coordinates
+function showConstraintDropdownForSocket(clickedSocketNode) {
+  if (!constraintDropdown) return;
+  activeTargetSocketNode = clickedSocketNode;
+  constraintDropdown.innerHTML = "";
+  
+  // Clear out duplicate selections already bound onto the card
+  const currentlyActiveKeys = Array.from(activeRegistry.querySelectorAll('.constraint-slot-wrapper:not(.slot-empty)'))
+                                    .map(slot => slot.dataset.key);
+
+  let hasMatches = false;
+
+  // 1. Grab all raw keys from the constraints registry
+  const rawConstraintKeys = Object.keys(ELDRITCH_CONSTRAINTS_REGISTRY);
+
+  // 2. 🎯 ALPHABETIZE ON THE FLY: Sort keys from A to Z based on registry item names
+  const alphabetizedConstraintKeys = rawConstraintKeys.sort((keyA, keyB) => {
+    const nameA = ELDRITCH_CONSTRAINTS_REGISTRY[keyA].name.toLowerCase();
+    const nameB = ELDRITCH_CONSTRAINTS_REGISTRY[keyB].name.toLowerCase();
+    return nameA.localeCompare(nameB);
+  });
+
+  // 3. Loop through your new alphabetized array instead of the raw registry keys!
+  alphabetizedConstraintKeys.forEach(key => {
+    const item = ELDRITCH_CONSTRAINTS_REGISTRY[key];
+    if (currentlyActiveKeys.includes(key)) return; // Filter duplicates
+
+    hasMatches = true;
+    const optionRow = document.createElement('div');
+    optionRow.style.cssText = "padding: 8px 12px; border-bottom: 1px solid #1e293b; color: #f1f5f9; font-size: 0.85rem; cursor: pointer; transition: background 0.1s;";
     
-    // Clear out duplicate selections already bound onto the card
-    const currentlyActiveKeys = Array.from(activeRegistry.querySelectorAll('.constraint-slot-wrapper:not(.slot-empty)'))
-                                      .map(slot => slot.dataset.key);
-
-    let hasMatches = false;
-
-    Object.keys(ELDRITCH_CONSTRAINTS_REGISTRY).forEach(key => {
-      const item = ELDRITCH_CONSTRAINTS_REGISTRY[key];
-      if (currentlyActiveKeys.includes(key)) return; // Filter duplicates
-
-      hasMatches = true;
-      const optionRow = document.createElement('div');
-      optionRow.style.cssText = "padding: 8px 12px; border-bottom: 1px solid #1e293b; color: #f1f5f9; font-size: 0.85rem; cursor: pointer; transition: background 0.1s;";
-      
-      optionRow.onmouseover = () => optionRow.style.background = "#1e1b4b";
-      optionRow.onmouseout = () => optionRow.style.background = "transparent";
-      optionRow.textContent = item.name;
-      
-      optionRow.addEventListener('click', (e) => {
-        e.stopPropagation(); // Stop event bubbling
-        if (activeTargetSocketNode) {
-            injectConstraintIntoTargetSocket(activeTargetSocketNode, key);
-        }
-        constraintDropdown.style.display = 'none';
-      });
-
-      constraintDropdown.appendChild(optionRow);
+    optionRow.onmouseover = () => optionRow.style.background = "#1e1b4b";
+    optionRow.onmouseout = () => optionRow.style.background = "transparent";
+    optionRow.textContent = item.name;
+    
+    optionRow.addEventListener('click', (e) => {
+      e.stopPropagation(); // Stop event bubbling
+      if (activeTargetSocketNode) {
+          injectConstraintIntoTargetSocket(activeTargetSocketNode, key);
+      }
+      constraintDropdown.style.display = 'none';
     });
 
-    if (hasMatches) {
-      // 📐 DYNAMIC POSITIONING CALCULATIONS
-      // Pins the dropdown precisely underneath the slot that the player clicked!
-      const slotTopPositionOffset = clickedSocketNode.offsetTop;
-      const slotHeightOffset = clickedSocketNode.offsetHeight;
-      
-      constraintDropdown.style.top = `${slotTopPositionOffset + slotHeightOffset + 2}px`;
-      constraintDropdown.style.display = 'block';
-    }
+    constraintDropdown.appendChild(optionRow);
+  });
+
+  if (hasMatches) {
+    // 📐 DYNAMIC POSITIONING CALCULATIONS
+    // Pins the dropdown precisely underneath the slot that the player clicked!
+    const slotTopPositionOffset = clickedSocketNode.offsetTop;
+    const slotHeightOffset = clickedSocketNode.offsetHeight;
+    
+    constraintDropdown.style.top = `${slotTopPositionOffset + slotHeightOffset + 2}px`;
+    constraintDropdown.style.display = 'block';
   }
+}
+
 
   // Bind click observers straight to your empty socket tracks natively
   if (activeRegistry) {
@@ -7337,11 +7479,20 @@ function initSpellDropdownCalculators(cardElement, savedData = null) {
   if (dormantSelect) {
     dormantSelect.addEventListener('change', () => {
       setTimeout(() => {
+          // 🎯 LIVE PIP GAUGE SYNCHRONIZATION
+          // Find the active snaking matrix path inside this specific card component
+          const liveSvgTrack = cardElement.querySelector('.dormant-pip-gauge');
+          if (liveSvgTrack) {
+              // Instantly copies the selected option value (1-8) onto the SVG data-attribute tag!
+              liveSvgTrack.setAttribute('data-active-tier', dormantSelect.value);
+          }
+
           recalculateSpellIntricacyScore(cardElement);
           if (typeof saveAllData === 'function') saveAllData();
       }, 10);
     });
   }
+
 
 } // 🛑 Closes your full initSpellDropdownCalculators function body!
 
@@ -7591,14 +7742,27 @@ document.addEventListener("click", (e) => {
 
 });
 
+
 // Logic block that checks input characters and lists available system effects rules
 function renderSuggestionsMenu(inputEl, queryText = "") {
     const dropdownWrapper = inputEl.closest(".effect-search-wrapper").querySelector(".effect-suggestions-dropdown");
     dropdownWrapper.innerHTML = "";
     dropdownWrapper.style.display = "block";
 
+    // 1. Grab all entries as an array
+    const rawEntries = Object.entries(ELDRITCH_EFFECTS_REGISTRY);
+
+    // 2. 🎯 ALPHABETIZE ON THE FLY: Sort entries from A to Z based on data.name
+    const alphabetizedEntries = rawEntries.sort((entryA, entryB) => {
+        const nameA = entryA[1].name.toLowerCase();
+        const nameB = entryB[1].name.toLowerCase();
+        return nameA.localeCompare(nameB);
+    });
+
     let matchCounter = 0;
-    for (const [key, data] of Object.entries(ELDRITCH_EFFECTS_REGISTRY)) {
+    
+    // 3. Loop through your new sorted array instead of the raw registry object!
+    for (const [key, data] of alphabetizedEntries) {
         if (queryText && !data.name.toLowerCase().includes(queryText)) continue;
         
         const infoTagText = data.type === "flat" ? `+${data.baseCost} Intricacy` : `+${data.costPerUnit || data.label} scaling`;
@@ -7621,6 +7785,7 @@ function renderSuggestionsMenu(inputEl, queryText = "") {
         dropdownWrapper.innerHTML = "<div style='padding: 8px 12px; color: #94a3b8; font-size: 0.85rem;'>No pre-defined match found. Click + Custom instead!</div>";
     }
 }
+
 
 // Spawns standard database predefined effect rows inside the active registry area
 function injectEffectRowToken(cardWrapper, effectKey) {

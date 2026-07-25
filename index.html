@@ -8233,32 +8233,32 @@ document.addEventListener("click", (e) => {
       // ========================================================================
 // 🎯 DIAGNOSTIC & UNVEIL PIPELINE
 // ========================================================================
-console.log("=== [DEBUG] PILL CLICKED ===");
-console.log("Parent Row element:", parentRow);
-console.log("Parent data-type attribute:", parentRow.getAttribute('data-type'));
-console.log("Parent classes:", parentRow.className);
+// console.log("=== [DEBUG] PILL CLICKED ===");
+// console.log("Parent Row element:", parentRow);
+//  console.log("Parent data-type attribute:", parentRow.getAttribute('data-type'));
+// console.log("Parent classes:", parentRow.className);
 
-const nativeContainer = parentRow.querySelector('.effect-interactive-selectors');
-console.log("Found .effect-interactive-selectors container?:", !!nativeContainer);
+// const nativeContainer = parentRow.querySelector('.effect-interactive-selectors');
+// console.log("Found .effect-interactive-selectors container?:", !!nativeContainer);
 
-if (nativeContainer) {
-    console.log("Applying flex visibility to container...");
-    nativeContainer.style.setProperty('display', 'flex', 'important');
-    
-    const children = nativeContainer.querySelectorAll('input, label, span');
-    console.log(`Found ${children.length} child input/label elements to reveal.`);
-    
-    children.forEach((child, index) => {
-        child.style.setProperty('display', 'inline-block', 'important');
-        if (child.classList.contains('custom-effect-title-input')) {
-            child.style.setProperty('flex-grow', '1', 'important');
-        }
-        console.log(`--> Revealed child ${index}:`, child.className || child.tagName, "Inline style is now:", child.style.display);
-    });
-} else {
-    console.warn("⚠️ CRITICAL: Could not find .effect-interactive-selectors inside this row!");
-}
-console.log("=============================");
+// if (nativeContainer) {
+//    console.log("Applying flex visibility to container...");
+//    nativeContainer.style.setProperty('display', 'flex', 'important');
+//    
+//    const children = nativeContainer.querySelectorAll('input, label, span');
+//    console.log(`Found ${children.length} child input/label elements to reveal.`);
+//    
+//    children.forEach((child, index) => {
+//        child.style.setProperty('display', 'inline-block', 'important');
+//        if (child.classList.contains('custom-effect-title-input')) {
+//            child.style.setProperty('flex-grow', '1', 'important');
+//        }
+//        console.log(`--> Revealed child ${index}:`, child.className || child.tagName, "Inline style is now:", child.style.display);
+//     });
+// } else {
+//     console.warn("⚠️ CRITICAL: Could not find .effect-interactive-selectors inside this row!");
+// }
+// console.log("=============================");
 // ========================================================================
 
       // ========================================================================
@@ -8355,9 +8355,9 @@ if (parentRow.getAttribute('data-type') === 'custom') {
     // ========================================================================
     // 🔎 1. BEFORE-LOCK DIAGNOSTIC TRACKER (Captures initial layout dimensions)
     // ========================================================================
-    console.log("=== [DIAGNOSTIC START] LOCKING CUSTOM ROW ===");
-    console.log("Active Row Element:", activeRowNode);
-    console.log("Master Row Height BEFORE loop hiding:", activeRowNode.offsetHeight, "px");
+    // console.log("=== [DIAGNOSTIC START] LOCKING CUSTOM ROW ===");
+    // console.log("Active Row Element:", activeRowNode);
+    // console.log("Master Row Height BEFORE loop hiding:", activeRowNode.offsetHeight, "px");
     // ========================================================================
 
     // 🎯 FIXED HIDING METHOD: Explicitly target and sweep away every input control element and text string label
@@ -8394,22 +8394,22 @@ if (parentRow.getAttribute('data-type') === 'custom') {
     // ========================================================================
     // 🔎 2. AFTER-LOCK DIAGNOSTIC TRACKER (Finds what elements are still taking space)
     // ========================================================================
-    console.log("Master Row Height AFTER loop hiding:", activeRowNode.offsetHeight, "px");
-    console.log("Listing all child elements inside this row still taking up physical space:");
+    // console.log("Master Row Height AFTER loop hiding:", activeRowNode.offsetHeight, "px");
+    // console.log("Listing all child elements inside this row still taking up physical space:");
     
-    const allChildElements = activeRowNode.querySelectorAll('*');
-    allChildElements.forEach((el, index) => {
-        const computedStyle = window.getComputedStyle(el);
-        const isHiddenByDisplayNone = computedStyle.display === 'none';
-        
+    // const allChildElements = activeRowNode.querySelectorAll('*');
+    // allChildElements.forEach((el, index) => {
+    //     const computedStyle = window.getComputedStyle(el);
+    //    const isHiddenByDisplayNone = computedStyle.display === 'none';
+    //    
         // If it's not hidden or still has an active layout box size, print it
-        if (!isHiddenByDisplayNone && el.offsetWidth > 0) {
-            console.log(`--> Element [${index}] <${el.tagName.toLowerCase()}> class: "${el.className || '(no-class)'}"`);
-            console.log(`    Display: ${computedStyle.display} | Width: ${el.offsetWidth}px | Height: ${el.offsetHeight}px`);
-            console.log(`    Margin: ${computedStyle.margin} | Padding: ${computedStyle.padding}`);
-        }
-    });
-    console.log("=== [DIAGNOSTIC END] ========================");
+    //    if (!isHiddenByDisplayNone && el.offsetWidth > 0) {
+    //        console.log(`--> Element [${index}] <${el.tagName.toLowerCase()}> class: "${el.className || '(no-class)'}"`);
+    //        console.log(`    Display: ${computedStyle.display} | Width: ${el.offsetWidth}px | Height: ${el.offsetHeight}px`);
+    //        console.log(`    Margin: ${computedStyle.margin} | Padding: ${computedStyle.padding}`);
+    //    }
+    // });
+    // console.log("=== [DIAGNOSTIC END] ========================");
     // ========================================================================
 
     // Update master metrics panel score

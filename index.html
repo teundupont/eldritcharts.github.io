@@ -5291,132 +5291,115 @@ if (data._spellsList) {
   saveAllData();
 });
 
-  // =========================================================================
-  // INTEGRATED FILE EXPORT DATA ENGINE
-  // =========================================================================
-  const exportBtn = document.getElementById('export-btn');
-  if (exportBtn) {
-    exportBtn.addEventListener('click', () => {
-      saveAllData(); // Gather newest live modifications before compiling file strings
-      const completeData = localStorage.getItem('eldritch_char_sheet_final');
-      if (!completeData) {
-        alert("No character data found to export! Please input values first.");
-        return;
-      }
-      const rawObj = JSON.parse(completeData);
-      const characterName = rawObj.charName ? rawObj.charName.trim().replace(/[^a-zA-Z0-9]/g, "_") : "Unnamed_Eldritch_Entity";
+  // ========================================================================
+// 💾 MASTER CHARACTER EXPORT SYSTEM (COLLISION-SAFE & REAL-TIME SAVE)
+// ========================================================================
+const masterExportBtn = document.getElementById('export-btn');
 
-      const fileBlob = new Blob([completeData], { type: 'application/json;charset=utf-8;' });
-      const downloadLink = document.createElement('a');
-      downloadLink.href = URL.createObjectURL(fileBlob);
-      downloadLink.download = `${characterName}_character_sheet.json`;
-      
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      document.body.removeChild(downloadLink);
-      URL.revokeObjectURL(downloadLink.href);
-    });
-  }
-
-  // =========================================================================
-  // INTEGRATED FILE IMPORT DATA ENGINE (FIXED FOR RUNTIME EXECUTION)
-  // =========================================================================
-  const importBtnUniqueMod = document.getElementById('import-btn');
-  const fileUploaderUniqueMod = document.getElementById('import-file-input');
-
-  if (importBtnUniqueMod && fileUploaderUniqueMod) {
-    
-    // 1. When the visible green button is clicked, immediately force open the file browser window
-    importBtnUniqueMod.addEventListener('click', () => {
-      fileUploaderUniqueMod.click();
-    });
-
-    // 2. Separate change event: Fires the millisecond a player selects their character JSON file
-    fileUploaderUniqueMod.addEventListener('change', (event) => {
-      const file = event.target.files[0]; // Isolate the first uploaded text payload
-      if (!file) return;
-
-      const fileReader = new FileReader();
-      fileReader.onload = (e) => {
-        try {
-          const importedPayloadString = e.target.result;
-          const verifiedObject = JSON.parse(importedPayloadString);
-          
-          // Clear current structural tracking trees completely to prevent card stacking loops
-          if (document.getElementById('social-container')) document.getElementById('social-container').innerHTML = '';
-          if (document.getElementById('challenges-container')) document.getElementById('challenges-container').innerHTML = '';
-          if (document.getElementById('blessings-container')) document.getElementById('blessings-container').innerHTML = '';
-          if (document.getElementById('spells-container')) document.getElementById('spells-container').innerHTML = '';
-
-          // Update Master Local Cache Database String References
-          localStorage.setItem('eldritch_char_sheet_final', importedPayloadString);
-          isInitialLoading = true; // Raise background calculation protection shields
-
-          // Unpack standard textual, select element box option fields
-          Object.keys(verifiedObject).forEach(key => {
-            if (key === '_spellsList' || key === '_checkedBoxes' || key === '_socialList' || key === '_challengesList' || key === '_blessingsList') return;
-            
-            // Handle both named fields and specific ID based field targets
-            const inputElements = document.getElementsByName(key);
-            if (inputElements && inputElements.length > 0) {
-              const el = inputElements[0];
-              if (el.type === 'checkbox') {
-                el.checked = (verifiedObject[key] === true || verifiedObject[key] === "true");
-              } else {
-                el.value = verifiedObject[key];
-              }
-            } else {
-              const elementById = document.getElementById(key);
-              if (elementById) {
-                if (elementById.type === 'checkbox') {
-                  elementById.checked = (verifiedObject[key] === true || verifiedObject[key] === "true");
-                } else {
-                  elementById.value = verifiedObject[key];
-                }
-              }
-            }
-          });
-
-          // Rebuild multi-input list tracking rows out of custom dataset models
-          if (verifiedObject._socialList && Array.isArray(verifiedObject._socialList)) {
-            verifiedObject._socialList.forEach(socData => createSocialRow(socData));
-          }
-          if (verifiedObject._challengesList && Array.isArray(verifiedObject._challengesList)) {
-            verifiedObject._challengesList.forEach(chalData => createChallengeRow(chalData));
-          }
-          if (verifiedObject._blessingsList && Array.isArray(verifiedObject._blessingsList)) {
-            verifiedObject._blessingsList.forEach(blessData => createBlessingRow(blessData));
-          }
-
-          // Redraw Will, Vigor, and Spirit checkbox matrices with imported modifiers
-          calculatePools();
-
-          // Reconstruct dynamic player Eldritch Arts spell cards
-          if (verifiedObject._spellsList && Array.isArray(verifiedObject._spellsList)) {
-            verifiedObject._spellsList.forEach(spellData => {
-              createSpellCard(spellData);
-            });
-          }
-
-          renderEldritchPhase();
-          isInitialLoading = false; // Lower automated saving restriction shield
-          saveAllData();           // Formalize active layout properties back to device memory
-
-          // Reset the hidden input box value so the user can re-import the same file if needed
-          fileUploader.value = '';
-
-          alert("Character data successfully unified! Custom tabs and Eldritch Arts fully restored.");
-          
-        } catch (error) {
-          console.error("Critical Import Failure Debug Log:", error);
-          alert("Error: Incompatible file format or corrupted character data schema.");
-          isInitialLoading = false;
-          fileUploader.value = '';
+if (masterExportBtn) {
+    masterExportBtn.addEventListener('click', () => {
+        // 🚀 1. CRITICAL: Gather all newest live ledger and text modifications BEFORE compiling strings!
+        if (typeof saveAllData === "function") {
+            saveAllData();
         }
-      };
-      fileReader.readAsText(file);
+
+        // 2. Snatch the absolute fresher data direct from localized browser cache
+        const savedData = localStorage.getItem('eldritch_char_sheet_final');
+        if (!savedData) {
+            alert("No character data found to export! Please input values first.");
+            return;
+        }
+
+        // 3. Safely read and sanitize character data to build a dynamic file name
+        let filenameCharTitle = "Unnamed_Eldritch_Entity";
+        try {
+            const dataStructureObject = JSON.parse(savedData);
+            if (dataStructureObject.charName && dataStructureObject.charName.trim() !== "") {
+                // Strips out weird symbols, question marks, and illegal Windows/Mac filesystem characters
+                filenameCharTitle = dataStructureObject.charName.trim().replace(/[^a-zA-Z0-9]/g, '_');
+            }
+        } catch (error) { 
+            console.warn("Could not extract character name for filename:", error); 
+        }
+
+        // 4. Compile the local string directly into an in-memory JSON file Blob allocation
+        const systemBlobData = new Blob([savedData], { type: "application/json;charset=utf-8;" });
+        const temporaryBlobObjectURL = URL.createObjectURL(systemBlobData);
+
+        // 5. Construct a temporary virtual layout element anchor to act as a download bridge
+        const temporaryDownloadAnchor = document.createElement('a');
+        temporaryDownloadAnchor.href = temporaryBlobObjectURL;
+        temporaryDownloadAnchor.download = `${filenameCharTitle}_character_sheet.json`;
+        temporaryDownloadAnchor.style.display = 'none'; // Keep it invisible
+
+        // 6. Append, click, and instantly clear the anchor node element from the DOM layout tree
+        document.body.appendChild(temporaryDownloadAnchor);
+        temporaryDownloadAnchor.click();
+        document.body.removeChild(temporaryDownloadAnchor);
+
+        // 🛠️ THE CRITICAL CHROME FIX: Introduces a brief delay before releasing memory resources.
+        // This stops your duplicate event listeners from triggering a 'file not found' crash.
+        setTimeout(() => {
+            URL.revokeObjectURL(temporaryBlobObjectURL);
+        }, 1500);
     });
-  }
+}
+
+  // ========================================================================
+// 📂 MASTER CHARACTER IMPORT SYSTEM
+// ========================================================================
+const masterImportBtn = document.getElementById('import-btn');
+const masterFileInput = document.getElementById('import-file-input');
+
+if (masterImportBtn && masterFileInput) {
+    // 1. Visible upload button routes directly to the hidden file input element window
+    masterImportBtn.addEventListener('click', () => {
+        masterFileInput.click();
+    });
+
+    // 2. Main data processor: Executes the moment a character JSON sheet is selected
+    masterFileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedContent = e.target.result;
+                
+                // Validate that the plain text translates into a working JavaScript object framework
+                const parsedData = JSON.parse(importedContent);
+                
+                // 🛡️ DATA INTEGRITY CHECK: Verifies the file isn't garbage text data
+                if (typeof parsedData !== 'object' || parsedData === null) {
+                    throw new Error("Invalid file content formatting structure.");
+                }
+
+                // 🛡️ THE GATEKEEPER CONFIRMATION: Blocks ALL code execution until the user clicks OK!
+                const confirmImport = confirm("Are you sure you want to import this file? It will permanently replace your current character statistics!");
+                if (!confirmImport) {
+                    masterFileInput.value = ''; // Safely reset input value
+                    return; // 🏁 Aborts instantly. No local storage cache or files are updated.
+                }
+
+                // 🚀 SECURITY PASSED: Now we can safely overwrite the local storage database cache string
+                localStorage.setItem('eldritch_char_sheet_final', JSON.stringify(parsedData));
+                
+                // 🔄 THE REPAINT SOLUTION: Reloads the page layout, triggering your app's bootup loops
+                // to gracefully regenerate your Token Bank tab and Spell card ledgers automatically!
+                window.location.reload();
+
+            } catch (error) {
+                console.error("Critical Import Failure Debug Log:", error);
+                alert("Error parsing backup save data file! Make sure it is a valid character sheet JSON export file.");
+                masterFileInput.value = ''; // Reset input element on error
+            }
+        };
+        
+        reader.readAsText(file);
+    });
+}
+
 
   // Run the injector immediately on page bootup for core attributes and stats
   injectCustomSteppers();
@@ -6030,89 +6013,6 @@ document.getElementById('execute-global-roll').addEventListener('click', () => {
   }, 620); // 620ms window completely clears all active layout paint pipelines
 });
 
-// =========================================================================
-// CHARACTER IMPORT / EXPORT SYSTEM
-// =========================================================================
-
-// --- 1. EXPORT FUNCTION ---
-document.getElementById('export-btn').addEventListener('click', () => {
-    // Grab current fresh data from localStorage
-    const savedData = localStorage.getItem('eldritch_char_sheet_final');
-    if (!savedData) {
-        alert("There is no character data to export yet!");
-        return;
-    }
-
-    // Try to extract the character name for a dynamic file name
-    let charName = "Eldritch_Character";
-    try {
-        const parsed = JSON.parse(savedData);
-        if (parsed.charName && parsed.charName.trim() !== "") {
-            charName = parsed.charName.trim().replace(/[^a-z0-9]/gi, '_'); // Sanitizes name strings
-        }
-    } catch (e) { console.error(e); }
-
-    // Convert string to a browser Blob download link
-    const blob = new Blob([savedData], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.href = url;
-    downloadAnchor.download = `${charName}_sheet.json`;
-    
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    
-    // Cleanup temporary URL resources
-    document.body.removeChild(downloadAnchor);
-    URL.revokeObjectURL(url);
-});
-
-// --- 2. IMPORT EVENT ROUTERS ---
-const importBtn = document.getElementById('import-btn');
-const fileInput = document.getElementById('import-file-input');
-
-// Route button click to hidden file input system
-importBtn.addEventListener('click', () => fileInput.click());
-
-fileInput.addEventListener('change', (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const importedContent = e.target.result;
-            
-            // Validate the file data structure integrity matches JSON formatting
-            const parsedData = JSON.parse(importedContent);
-            
-            // Double check it looks like one of your character sheets
-            if (typeof parsedData !== 'object' || parsedData === null) {
-                throw new Error("Invalid file content formatting structure.");
-            }
-
-            // Prompt safety check confirmation warning before blowing away current UI states
-            const confirmImport = confirm("Are you sure you want to import this file? It will permanently replace your current character statistics!");
-            if (!confirmImport) {
-                fileInput.value = ''; // Reset input element
-                return;
-            }
-
-            // Commit object string directly to localized system storage variables
-            localStorage.setItem('eldritch_char_sheet_final', JSON.stringify(parsedData));
-            
-            // Re-trigger a fresh webpage frame load reload loop cycle to safely paint the new UI elements
-            window.location.reload();
-
-        } catch (error) {
-            alert("Error parsing backup save data file! Make sure it is a valid character sheet JSON export file.");
-            console.error(error);
-        }
-    };
-    
-    reader.readAsText(file);
-});
 
 // =========================================================================
 // RUNTIME AUTOMATION: GLOBAL CONTINUOUS PRESS STEPPER LOOP ENGINE (STABLE)

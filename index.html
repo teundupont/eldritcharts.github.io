@@ -2355,6 +2355,44 @@ body:has(#token-bank.active-tab) #eldritch-phase-track {
   vertical-align: middle !important;
 }
 
+/* Lock the inner container into an un-wrappable row format */
+.custom-flex-inner-container {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    min-width: 0 !important;
+}
+
+/* Ensure the inputs are never accidentally hidden by generic selectors */
+.custom-effect-title-input,
+.custom-intricacy-override-input {
+    display: inline-block !important;
+}
+
+/* 🛠️ FIX TEXT INPUT BREEDTE: Dwing het tekstveld om alle beschikbare ruimte te pakken */
+.custom-inputs-group-wrapper input.custom-effect-title-input {
+    flex: 1 1 100% !important; /* Start vanaf 100% basisbreedte en krimp/groei mee */
+    width: 100% !important;     /* Overschrijf de browser default breedte */
+    min-width: 50px !important; /* Voorkom dat hij helemaal verdwijnt */
+}
+
+/* 🛠️ FIX STEPPER POSITIONERING: Zorg dat de pijltjes direct naast het getal blijven */
+.custom-stepper-box-group {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 4px !important;
+    flex-shrink: 0 !important;
+}
+
+/* Zorg dat de pijltjes zelf niet gaan zweven of ongewenste marges krijgen */
+.custom-stepper-box-group .stepper-arrow-btn {
+    display: inline-block !important;
+    position: static !important; /* Haal ze uit eventuele absolute positionering */
+    margin: 0 !important;
+}
+
   </style>
 </head>
 <body>
@@ -3445,8 +3483,10 @@ const ELDRITCH_EFFECTS_REGISTRY = {
     "phasing":            { name: "Phasing", type: "flat", baseCost: 3 },
 
     // --- SCALING MULTIPLIER EFFECTS ---
-    "acceleration":       { name: "Acceleration/Deceleration", type: "scaling", costPerUnit: 3, label: "Points" },
-    "actions":            { name: "Add/Remove Actions", type: "scaling", costPerUnit: 8, label: "Actions" },
+    "acceleration":       { name: "Acceleration", type: "scaling", costPerUnit: 3, label: "Points" },
+    "deceleration":       { name: "Deceleration", type: "scaling", costPerUnit: 3, label: "Points" },
+    "add_actions":        { name: "Add Actions", type: "scaling", costPerUnit: 8, label: "Actions" },
+    "remove_actions":     { name: "Remove Actions", type: "scaling", costPerUnit: 8, label: "Actions" },
     "challenge_bonus":    { name: "Challenge Bonus", type: "scaling", costPerUnit: 2, label: "Bonus" },
     "effort_bonus":       { name: "Effort Bonus", type: "scaling", costPerUnit: 4, label: "Bonus" },
     "healing":            { name: "Heal One Defense", type: "scaling", costPerUnit: 4, label: "Boxes" },
@@ -3456,11 +3496,12 @@ const ELDRITCH_EFFECTS_REGISTRY = {
     "alter_defense":      { name: "Alter Defense", type: "stat_modifier", costPerUnit: 2, label: "Points" },
 
     // Locate and replace the old attribute entry with these three precise pillars:
-    "alter_mind":  { name: "Alter Attribute: Mind", type: "stat_modifier", costPerUnit: 3, label: "Points" },
-    "alter_body":  { name: "Alter Attribute: Body", type: "stat_modifier", costPerUnit: 3, label: "Points" },
-    "alter_soul":  { name: "Alter Attribute: Soul", type: "stat_modifier", costPerUnit: 3, label: "Points" },
+    "alter_mind":         { name: "Alter Attribute: Mind", type: "stat_modifier", costPerUnit: 3, label: "Points" },
+    "alter_body":         { name: "Alter Attribute: Body", type: "stat_modifier", costPerUnit: 3, label: "Points" },
+    "alter_soul":         { name: "Alter Attribute: Soul", type: "stat_modifier", costPerUnit: 3, label: "Points" },
 
-    "shrinking_growing":  { name: "Shrinking/Growing", type: "special_scaling", costMatrix: { 1: 4, 2: 10, 3: 18, 4: 28 }, label: "Stages"},
+    "growing":            { name: "Growing", type: "special_scaling", costMatrix: { 1: 4, 2: 10, 3: 18, 4: 28 }, label: "Stages"},
+    "shrinking":          { name: "Shrinking", type: "special_scaling", costMatrix: {1: 4, 2: 10, 3: 18, 4: 28 }, label: "Stages"},
     "social_bonus":       { name: "Social Effort Bonus", type: "scaling", costPerUnit: 2, label: "Bonus" },
     "shields":            { name: "Shielding", type: "scaling", costPerUnit: 1, label: "Boxes" },
     "summons":            { name: "Summoning", type: "scaling", costPerUnit: 1, label: "Attribute Points"},
@@ -6878,11 +6919,11 @@ function recalculateSpellIntricacyScore(targetCard) {
         totalAccumulatedIntricacySum += computedModifierPointsCost;
     });
 
-    console.log("=========================================");
-    console.log("🧪 CALC RADAR | targetCard Element:", targetCard);
-    console.log("🧪 CALC RADAR | Card Intricacy Field:", targetCard?.querySelector('[data-field="intricacy"]'));
-    console.log("🧪 CALC RADAR | Total Effect Rows inside this specific targetCard:", targetCard?.querySelectorAll('.effect-token-row').length);
-    console.log("=========================================");
+//    console.log("=========================================");
+//    console.log("🧪 CALC RADAR | targetCard Element:", targetCard);
+//    console.log("🧪 CALC RADAR | Card Intricacy Field:", targetCard?.querySelector('[data-field="intricacy"]'));
+//    console.log("🧪 CALC RADAR | Total Effect Rows inside this specific targetCard:", targetCard?.querySelectorAll('.effect-token-row').length);
+//    console.log("=========================================");
 
 
     // ========================================================================
@@ -6999,7 +7040,7 @@ function recalculateSpellIntricacyScore(targetCard) {
 
     // 🔥 THE DEDUCTION SUBTRACTION: Subtract the total constraints from your running sum total points!
     totalAccumulatedIntricacySum -= totalConstraintsDeductionPoints;
-    console.log(`📉 MATH PROBE 4 | Total Constraints points subtracted: -${totalConstraintsDeductionPoints}. Net running Intricacy sum: ${totalAccumulatedIntricacySum}`);
+//    console.log(`📉 MATH PROBE 4 | Total Constraints points subtracted: -${totalConstraintsDeductionPoints}. Net running Intricacy sum: ${totalAccumulatedIntricacySum}`);
 
   // ========================================================================
   // 🧠 GLOBAL MODIFIER: MIND ATTRIBUTE INTRICACY REDUCTION PASS
@@ -7013,7 +7054,7 @@ function recalculateSpellIntricacyScore(targetCard) {
     
     totalAccumulatedIntricacySum -= mindDeductionBonus;
     
-    console.log(`🧠 MIND BONUS | Mind Score: ${rawMindScoreValue}. Subtracted -${mindDeductionBonus} from Intricacy.`);
+//    console.log(`🧠 MIND BONUS | Mind Score: ${rawMindScoreValue}. Subtracted -${mindDeductionBonus} from Intricacy.`);
   }
 
   // ========================================================================
@@ -7147,17 +7188,26 @@ function initSpellDropdownCalculators(cardElement, savedData = null) {
               row.innerHTML = `
             <!-- Explicit static display span wrapper for your custom title text -->
             <span class="custom-title-static-display" style="color: #f1f5f9; font-size: 0.85rem; font-weight: 500; display: none;">${savedEffect.title || "Custom Spell Effect"}</span>
-            
-            <!-- 🎯 FIXED WRAPPER: Encloses everything together so your Step 3 insertBefore calculations run perfectly! -->
-            <div class="custom-inputs-group-wrapper" style="display: flex; align-items: center; gap: 8px; flex-grow: 1; justify-content: space-between; width: 100%;">
-                <div style="display: flex; align-items: center; gap: 8px; flex-grow: 1;">
-                    <input type="text" class="custom-effect-title-input" value="${savedEffect.title || ''}" placeholder="Custom title..." style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.85rem; padding: 4px 8px; flex-grow: 1;" />
-                    <span class="effect-ui-label" style="color: #64748b; font-size: 0.75rem; font-weight: bold; text-transform: uppercase;">Cost:</span>
-                    <input type="number" class="custom-intricacy-override" value="${savedEffect.value || 0}" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.85rem; padding: 4px 4px; width: 45px; text-align: center;" />
-                </div>
-                
-                <button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer; padding: 0 4px;">✕</button>
-            </div>
+
+            <!-- Master wrapper met min-width om overflow te voorkomen -->
+            <div class="custom-inputs-group-wrapper" style="display: flex; align-items: center; gap: 12px; flex-grow: 1; justify-content: space-between; width: 100%; min-width: 0;">
+    
+                 <div class="custom-flex-inner-container" style="display: flex; align-items: center; gap: 8px; flex-grow: 1; flex-wrap: nowrap; min-width: 0; width: 100%;">
+        
+                 <!-- Tekstveld met flex-grow én width: 100% -->
+                 <input type="text" class="custom-effect-title-input" value="${savedEffect.title || ''}" placeholder="Custom title..." style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.85rem; padding: 4px 8px; flex: 1 1 100%; width: 100%; min-width: 0;" />
+        
+                 <span class="effect-ui-label" style="color: #64748b; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; white-space: nowrap; flex-shrink: 0;">Cost:</span>
+        
+                      <!-- De afgesloten container voor het getal + de pijltjes -->
+                      <div class="custom-stepper-box-group" style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
+                      <input type="number" class="custom-intricacy-override custom-intricacy-override-input" value="${savedEffect.value || 0}" style="background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.85rem; padding: 4px 4px; width: 45px; text-align: center; flex-shrink: 0;" />
+                      <!-- Als je JS hier de stepper-arrow-btn elementen injecteert, blijven ze hierbinnen opgesloten -->
+                    </div>
+                  </div>
+    
+                 <button type="button" class="remove-effect-row-btn" style="background: transparent; border: none; color: #ef4444; font-weight: bold; cursor: pointer; padding: 0 4px; flex-shrink: 0;">✕</button>
+           </div>
         `;
             // Let your save data binder engine know this is an active custom tracking parameter row entry
             row.setAttribute('data-type', 'custom');
@@ -8087,20 +8137,34 @@ function injectCustomEffectRowToken(cardWrapper, defaultTitle = "", defaultCost 
     if (e.key === "Enter") { lockCustomRowState(); }
   });
 
-  // --- 🔓 UNLOCK MODE ---
+    // --- 🔓 UNLOCK MODE ---
   // STRICT UNLOCK: Clicking the grey pill is the only way to re-open editing inputs
   pillDisplay.addEventListener("click", (e) => {
     e.stopPropagation(); // Stops the page click listener from immediately re-locking the row
     row.classList.remove("is-locked");
-    inputSelectors.style.display = "flex";
+    
+    // 🛠️ THE SURGICAL FIX: Force the master wrapper container back to flex layout
+    inputSelectors.style.setProperty('display', 'flex', 'important');
     staticTitleDisplay.style.display = "none";
 
-    // Instantly focus and highlight all text inside the input field
+    // 🛠️ THE SURGICAL FIX: Force all hidden child inputs and labels inside it to show up
+    inputSelectors.querySelectorAll('input, label, span, .effect-ui-label').forEach(control => {
+        control.style.setProperty('display', 'inline-block', 'important');
+        
+        // Force the text field to stretch and fill the available row space smoothly
+        if (control.classList.contains('custom-effect-title-input')) {
+            control.style.setProperty('flex-grow', '1', 'important');
+            control.style.setProperty('width', '100%', 'important');
+        }
+    });
+
+    // Instantly focus and highlight all text inside the input field (Kept perfectly intact!)
     setTimeout(() => {
       textInput.focus();
       textInput.select();
     }, 20);
   });
+
 
   bucket.appendChild(row);
 
@@ -8166,6 +8230,76 @@ document.addEventListener("click", (e) => {
           control.style.display = ""; 
       });
 
+      // ========================================================================
+// 🎯 DIAGNOSTIC & UNVEIL PIPELINE
+// ========================================================================
+console.log("=== [DEBUG] PILL CLICKED ===");
+console.log("Parent Row element:", parentRow);
+console.log("Parent data-type attribute:", parentRow.getAttribute('data-type'));
+console.log("Parent classes:", parentRow.className);
+
+const nativeContainer = parentRow.querySelector('.effect-interactive-selectors');
+console.log("Found .effect-interactive-selectors container?:", !!nativeContainer);
+
+if (nativeContainer) {
+    console.log("Applying flex visibility to container...");
+    nativeContainer.style.setProperty('display', 'flex', 'important');
+    
+    const children = nativeContainer.querySelectorAll('input, label, span');
+    console.log(`Found ${children.length} child input/label elements to reveal.`);
+    
+    children.forEach((child, index) => {
+        child.style.setProperty('display', 'inline-block', 'important');
+        if (child.classList.contains('custom-effect-title-input')) {
+            child.style.setProperty('flex-grow', '1', 'important');
+        }
+        console.log(`--> Revealed child ${index}:`, child.className || child.tagName, "Inline style is now:", child.style.display);
+    });
+} else {
+    console.warn("⚠️ CRITICAL: Could not find .effect-interactive-selectors inside this row!");
+}
+console.log("=============================");
+// ========================================================================
+
+      // ========================================================================
+// 🎯 THE SURGICAL UNVEIL PATCH: Self-heals freshly spawned custom rows
+// ========================================================================
+if (parentRow.getAttribute('data-type') === 'custom') {
+    // 1. Find the old structural inner container class
+    const nativeContainer = parentRow.querySelector('.effect-interactive-selectors');
+    if (nativeContainer) {
+        // Force the container back to its correct flex structure
+        nativeContainer.style.setProperty('display', 'flex', 'important');
+        
+        // 2. Explicitly force all child inputs and labels inside it to be visible
+        nativeContainer.querySelectorAll('input, label, span').forEach(child => {
+            // Keep number boxes inline, stretch text fields
+            if (child.classList.contains('custom-effect-title-input')) {
+                child.style.setProperty('display', 'inline-block', 'important');
+                child.style.setProperty('flex-grow', '1', 'important');
+            } else {
+                child.style.setProperty('display', 'inline-block', 'important');
+            }
+        });
+    }
+}
+// ========================================================================
+
+      // ========================================================================
+            // 🎯 THE AUTO-FOCUS PATCH: Targets reloaded custom inputs on unlock
+            // ========================================================================
+            if (parentRow.getAttribute('data-type') === 'custom' || parentRow.querySelector('.custom-effect-title-input')) {
+                const reloadedTextInput = parentRow.querySelector('.custom-effect-title-input');
+                if (reloadedTextInput) {
+                    // Uses a brief 20ms timeout to ensure the row finishes rendering before focusing
+                    setTimeout(() => {
+                        reloadedTextInput.focus();
+                        reloadedTextInput.select();
+                    }, 20);
+                }
+            }
+            // ========================================================================
+
       // Special custom unlock behavior: restore the interactive input wrapper visibility
       const customTitleInput = parentRow.querySelector('.custom-effect-title-input');
       if (customTitleInput) {
@@ -8183,9 +8317,9 @@ document.addEventListener("click", (e) => {
   const activeRowNode = e.target.closest('.effect-token-row') || e.target.closest('.effect-interactive-selectors');
   
   if (activeRowNode) {
-    console.log("⚡ CLICK CAPTURED | Target Element:", e.target);
-    console.log("⚡ CLICK CAPTURED | Row Data-Key:", activeRowNode.dataset.key);
-    console.log("⚡ CLICK CAPTURED | Row Classes:", activeRowNode.className);
+//    console.log("⚡ CLICK CAPTURED | Target Element:", e.target);
+//    console.log("⚡ CLICK CAPTURED | Row Data-Key:", activeRowNode.dataset.key);
+//    console.log("⚡ CLICK CAPTURED | Row Classes:", activeRowNode.className);
   }
   if (!activeRowNode) return;
 
@@ -8218,6 +8352,14 @@ document.addEventListener("click", (e) => {
     pillDisplay.textContent = `Custom +${calculatedIntricacyCost}`;
     activeRowNode.classList.add('is-locked');
     
+    // ========================================================================
+    // 🔎 1. BEFORE-LOCK DIAGNOSTIC TRACKER (Captures initial layout dimensions)
+    // ========================================================================
+    console.log("=== [DIAGNOSTIC START] LOCKING CUSTOM ROW ===");
+    console.log("Active Row Element:", activeRowNode);
+    console.log("Master Row Height BEFORE loop hiding:", activeRowNode.offsetHeight, "px");
+    // ========================================================================
+
     // 🎯 FIXED HIDING METHOD: Explicitly target and sweep away every input control element and text string label
     // This completely prevents visual overlapping without accidentally hiding the master container row itself!
     activeRowNode.querySelectorAll('input, select, label, span:not(.locked-pill-display), .stepper-arrow-btn').forEach(control => {
@@ -8227,10 +8369,48 @@ document.addEventListener("click", (e) => {
         }
     });
 
-    // Make sure your static text title display turns on cleanly
+    // ========================================================================
+    // 🎯 THE SURGICAL WIDTH-RECOVERY FIX: Collapses inner blocks for BOTH states!
+    // ========================================================================
+    // Looks for the reloaded container OR the newly spawned container name
+    const innerInputContainer = activeRowNode.querySelector('.custom-flex-inner-container, .effect-interactive-selectors');
+    if (innerInputContainer) {
+        innerInputContainer.style.setProperty('display', 'none', 'important');
+    }
+    // ========================================================================
+
+    // Make sure your static text title display turns on cleanly and stays single-line
     if (staticTitle) {
         staticTitle.style.setProperty('display', 'inline-block', 'important');
+        staticTitle.style.setProperty('white-space', 'nowrap', 'important');
     }
+
+    // Push the pill container all the way to the right next to the X!
+    if (pillDisplay) {
+        pillDisplay.style.setProperty('margin-left', 'auto', 'important');
+    }
+
+
+    // ========================================================================
+    // 🔎 2. AFTER-LOCK DIAGNOSTIC TRACKER (Finds what elements are still taking space)
+    // ========================================================================
+    console.log("Master Row Height AFTER loop hiding:", activeRowNode.offsetHeight, "px");
+    console.log("Listing all child elements inside this row still taking up physical space:");
+    
+    const allChildElements = activeRowNode.querySelectorAll('*');
+    allChildElements.forEach((el, index) => {
+        const computedStyle = window.getComputedStyle(el);
+        const isHiddenByDisplayNone = computedStyle.display === 'none';
+        
+        // If it's not hidden or still has an active layout box size, print it
+        if (!isHiddenByDisplayNone && el.offsetWidth > 0) {
+            console.log(`--> Element [${index}] <${el.tagName.toLowerCase()}> class: "${el.className || '(no-class)'}"`);
+            console.log(`    Display: ${computedStyle.display} | Width: ${el.offsetWidth}px | Height: ${el.offsetHeight}px`);
+            console.log(`    Margin: ${computedStyle.margin} | Padding: ${computedStyle.padding}`);
+        }
+    });
+    console.log("=== [DIAGNOSTIC END] ========================");
+    // ========================================================================
 
     // Update master metrics panel score
     const masterCardContainer = activeRowNode.closest('.spell-card-body');

@@ -25,6 +25,45 @@
       margin: 0;
       padding: 20px;
     }
+/* The core setup for your two jagged portals 
+.chaos-intrusion {
+  position: fixed;
+  width: 400px;   Width of the portal region 
+  height: 800px;  Height of the crack 
+  z-index: -1;    Keeps them locked safely behind all text and cards 
+  
+   🔮 THE REACTION CONSTANT: Controlled entirely by your Javascript math 
+  --tear-width: 0; 
+  
+   Use our jagged vector mask to clip the container 
+  clip-path: url(#chaos-tear-mask);
+  
+   An organic swirling cosmic gradient inside the crack 
+  background: radial-gradient(circle at center, #d8b4fe 0%, #a855f7 40%, #4c1d95 80%, #000 100%);
+  box-shadow: inset 0 0 20px rgba(168, 85, 247, 0.8);
+  
+   Forces the crack to widen only horizontally (X-axis) like a tearing portal 
+  transform: scaleX(var(--tear-width));
+  transform-origin: center center;
+  
+   A smooth transition so the physical rip feels impactful and satisfying 
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  opacity: 0.85;
+}
+
+ Position Intrusion 1 on the upper left flank 
+.intrusion-left {
+  top: -100px;
+  left: -50px;
+  transform: rotate(-15deg) scaleX(var(--tear-width)); /* Slight organic tilt 
+}
+
+ Position Intrusion 2 on the bottom right flank 
+.intrusion-right {
+  bottom: -100px;
+  right: -50px;
+  transform: rotate(20deg) scaleX(var(--tear-width));   Intersecting counter-angle 
+} */
     .sheet-container {
       max-width: 1000px;
       margin: 0 auto;
@@ -2397,6 +2436,21 @@ body:has(#token-bank.active-tab) #eldritch-phase-track {
 </head>
 <body>
 
+<!--
+ Invisible SVG Definitions for Chaos Tears 
+ <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" width="0" height="0">
+   <defs>
+     Sharp, jagged lightning tear path 
+    <clipPath id="chaos-tear-mask" clipPathUnits="objectBoundingBox">
+      <path d="M 0.5,0 L 0.53,0.2 L 0.46,0.35 L 0.55,0.55 L 0.44,0.7 L 0.52,0.85 L 0.48,1 L 0.52,1 L 0.56,0.83 L 0.49,0.71 L 0.59,0.53 L 0.49,0.37 L 0.57,0.22 Z"/>
+    </clipPath>
+  </defs>
+</svg>
+
+ 🎯 THE TWO INTRUSIONS: The physical rips floating safely beneath your character sheet panels 
+<div class="chaos-intrusion intrusion-left"></div>
+<div class="chaos-intrusion intrusion-right"></div> -->
+
 <form id="char-sheet" class="sheet-container">
 
 <!-- TAB NAVIGATION BAR -->
@@ -3491,6 +3545,7 @@ const ELDRITCH_EFFECTS_REGISTRY = {
     "effort_bonus":       { name: "Effort Bonus", type: "scaling", costPerUnit: 4, label: "Bonus" },
     "healing":            { name: "Heal One Defense", type: "scaling", costPerUnit: 4, label: "Boxes" },
     "heal_all":           { name: "Heal All Defenses", type: "scaling", costPerUnit: 6, label: "Boxes" },
+    "teleportation":      { name: "Teleportation", type: "scaling", costPerUnit: 5, label: "Stages"},
     // Keep them clean and running perfectly on your standard scaling system loop
     "alter_attack":       { name: "Alter Attack", type: "stat_modifier", costPerUnit: 2, label: "Points" },
     "alter_defense":      { name: "Alter Defense", type: "stat_modifier", costPerUnit: 2, label: "Points" },
@@ -8357,7 +8412,73 @@ if (parentRow.getAttribute('data-type') === 'custom') {
       recalculateSpellIntricacyScore(masterCardContainer);
   }
 });
+/*
+// ========================================================================
+// 🔮 ELDRITCH PHASE: BACKGROUND REACTION ENGINE
+// ========================================================================
+function initializeEldritchBackgroundEngine() {
+    // 🛠️ TARGET IDENTIFICATION: Replace 'hidden-phase-tracker-id' with your actual tracking input ID!
+    const phaseTrackerNode = document.getElementById('eldritch-phase-value');
+    
+    if (!phaseTrackerNode) {
+        console.warn("⚠️ Eldritch Background Engine: Tracker input field target not found yet.");
+        return;
+    }
 
+    // This internal sub-function handles reading the value and painting the background width
+    function updateBackgroundVisuals() {
+    const phaseTrackerNode = document.getElementById('eldritch-phase-value');
+    const rawValue = parseInt(phaseTrackerNode?.value) || 0;
+    
+    // Find our two independent vector tear components
+    const intrusions = document.querySelectorAll('.chaos-intrusion');
+
+    // 🔮 CHAOS MODE (Negative Numbers)
+    if (rawValue < 0) {
+        const chaosDepth = Math.abs(rawValue); // e.g., -1 becomes 1, -4 becomes 4
+        
+        // Math Translation: Each step into chaos widens the tear horizontally.
+        // Step -1 = 0.25 (thin crack), Step -4 = 1.0 (wide jagged portal), Step -6 = 1.5 (gaping abyssal rift)
+        const calculatedScaleWidth = chaosDepth * 0.25;
+
+        intrusions.forEach(tear => {
+            tear.style.setProperty('--tear-width', calculatedScaleWidth);
+            // Optional ambient magical rumble glow
+            tear.style.filter = `drop-shadow(0 0 ${10 + chaosDepth * 5}px rgba(168, 85, 247, 0.6))`;
+        });
+    } 
+    // 🛡️ BALANCED OR POWER MODE (0 or Positive Numbers)
+    else {
+        // Completely pinch the jagged cracks shut back into reality!
+        intrusions.forEach(tear => {
+            tear.style.setProperty('--tear-width', '0');
+            tear.style.filter = 'none';
+        });
+    }
+}
+
+
+    // 🏎️ Initial Execution pass: Paint correctly the second the character sheet finishes loading
+    updateBackgroundVisuals();
+
+    // 🕵️ MUTATION OBSERVER PIPELINE: Watches the hidden HTML field for data shifts automatically!
+    const visualSentryObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.type === "attributes" && mutation.attributeName === "value") {
+                updateBackgroundVisuals();
+            }
+        });
+    });
+
+    // Arm the sentry target to look out for attribute alterations
+    visualSentryObserver.observe(phaseTrackerNode, { attributes: true });
+}
+
+// Fire the initialization pass once the global document frame loads
+document.addEventListener("DOMContentLoaded", () => {
+    initializeEldritchBackgroundEngine();
+});
+*/
 </script>
 
 </body>

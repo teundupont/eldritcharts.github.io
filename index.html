@@ -204,7 +204,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  /* margin-bottom: 15px; */
   border-bottom: 1px solid #3b3b54;
   padding-bottom: 5px;
 }
@@ -1856,7 +1856,7 @@ body:has(#token-bank.active-tab) #eldritch-phase-track {
 /* === Option 1: Undefined (0 Points Added = 0 Nodes Lit) === */
 [data-size-cost="0"] .sz-nd { stroke: #4b5563; }
 
-/* === Option 2: Pebble (1 Point Added = 1 Node Lit) === */
+/* === Option 2: Chicken (1 Point Added = 1 Node Lit) === */
 [data-size-cost="1"] .sz-nd-core { 
     fill: #a855f7; stroke: #a855f7; 
     filter: drop-shadow(0 0 3px rgba(168, 85, 247, 0.7)); 
@@ -3587,7 +3587,7 @@ function createSpellCard(savedData = null) {
 
   // UPDATED HOOK: Dynamic Spell Card Template Header Structure
       card.innerHTML = `
-    <div class="spell-header-row" onclick="toggleSingleSpellCardCollapse(this)" style="display: flex; justify-content: space-between; align-items: center; background: #1a1a26; padding: 10px; border-bottom: 1px solid var(--border-color); cursor: pointer; flex-wrap: wrap; gap: 12px; width: 100%; box-sizing: border-box;">
+    <div class="spell-header-row" onclick="toggleSingleSpellCardCollapse(this)" style="display: flex; justify-content: space-between; align-items: center; background: transparent; border-bottom: 1px solid var(--border-color); cursor: pointer; flex-wrap: wrap; gap: 12px; width: 100%; box-sizing: border-box;">
             <!-- LEFT-ALIGNED ZONE: Handles the Title Purely -->
       <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 150px;">
         <!-- FIXED STRUCTURAL TEXT ANCHOR: Changed from a hardcoded label to a dynamic span slot! -->
@@ -3628,7 +3628,7 @@ function createSpellCard(savedData = null) {
 <div class="spell-card-body" style="${savedData?._minimized === "true" ? "display: none;" : "display: block;"}">
   
   <!-- FIRST SECTION ROW LAYOUT (Your Sacred Metadata Ceiling Grid) -->
-  <div class="align-bottom-grid" style="display: flex; flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 15px; width: 100%; box-sizing: border-box; margin-bottom: 15px;">
+  <div class="align-bottom-grid" style="display: flex; flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 15px; width: 100%; box-sizing: border-box; margin-top: 15px; margin-bottom: 15px;">
     <!-- 1. SPELL NAME FIELD -->
     <div class="field-group" style="flex: 2.2; min-width: 180px; box-sizing: border-box;">
       <label style="white-space: nowrap;">Spell Name</label>
@@ -3731,7 +3731,7 @@ function createSpellCard(savedData = null) {
 <!-- Your original Size options scaling cleanly from 1 to 7 -->
 <select class="sp-data spell-dropdown-metric size-select-field" data-field="size" style="flex-grow: 1;">
 <option value="1" ${savedData?.size === "1" ? "selected" : ""}>Undefined</option>
-<option value="2" ${savedData?.size === "2" ? "selected" : ""}>Pebble</option>
+<option value="2" ${savedData?.size === "2" ? "selected" : ""}>Chicken</option>
 <option value="3" ${savedData?.size === "3" ? "selected" : ""}>Humanoid</option>
 <option value="4" ${savedData?.size === "4" ? "selected" : ""}>Car-sized</option>
 <option value="5" ${savedData?.size === "5" ? "selected" : ""}>Room-sized</option>

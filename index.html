@@ -3687,7 +3687,7 @@ function createSpellCard(savedData = null) {
 <div style="display: flex; gap: 4px; align-items: center; height: 38px; box-sizing: border-box;">
     
 <!-- Your original selection options, perfectly preserved -->
-<select id="target-select" class="sp-data spell-dropdown-metric target-select-field" data-field="targets" style="flex-grow: 1;">
+<select class="sp-data spell-dropdown-metric target-select target-select-field" data-field="targets" style="flex-grow: 1;">
 <option value="1" ${savedData?.targets === "1" ? "selected" : ""}>None</option>
 <option value="2" ${savedData?.targets === "2" ? "selected" : ""}>One</option>
 <option value="3" ${savedData?.targets === "3" ? "selected" : ""}>Two</option>
@@ -3698,7 +3698,7 @@ function createSpellCard(savedData = null) {
 </select>
     
 <!-- Scaled Ritual Nexus Container (Strictly 32x32 to match Size field) -->
-<div id="nexus-container" data-targets="${savedData?.targets || '1'}" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0;">
+<div class="nexus-container" data-targets="${savedData?.targets || '1'}" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0;">
 <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://w3.org" style="overflow: visible;">
 <!-- Your original Constellation Web geometry -->
 <g class="nexus-web" stroke-width="2" stroke-dasharray="2,2" fill="none">
@@ -3740,7 +3740,7 @@ function createSpellCard(savedData = null) {
 </select>
     
 <!-- Size Duplicated Nexus Container (Strictly 32x32 footprint) -->
-<div id="size-nexus-container" data-size-cost="${Math.max(0, (parseInt(savedData?.size) || 1) - 1)}" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0;">
+<div class="size-nexus-container" data-size-cost="${Math.max(0, (parseInt(savedData?.size) || 1) - 1)}" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0;">
 <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://w3.org" style="overflow: visible;">
 <!-- Constellation Web Geometry for Size -->
 <g class="size-web" stroke-width="2" stroke-dasharray="2,2" fill="none">
@@ -3781,7 +3781,7 @@ function createSpellCard(savedData = null) {
 </select>
     
 <!-- Distance Geometric Box Container (32x32) -->
-<div id="distance-nexus-container" data-distance-cost="${Math.max(0, (parseInt(savedData?.distance) || 1) - 1)}" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0;">
+<div class="distance-nexus-container" data-distance-cost="${Math.max(0, (parseInt(savedData?.distance) || 1) - 1)}" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0;">
 <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://w3.org" style="overflow: visible;">
 <!-- The Structural Wireframe Lines of the Cube Box -->
 <g class="distance-web" stroke-width="2" stroke-dasharray="2,2" fill="none">
@@ -3821,7 +3821,7 @@ function createSpellCard(savedData = null) {
 <option value="9" ${savedData?.duration === "9" ? "selected" : ""}>Permanent</option>
 </select>
     
-<div id="duration-nexus-container" data-duration-cost="${Math.max(0, (parseInt(savedData?.duration) || 1) - 1)}" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0;">
+<div class="duration-nexus-container" data-duration-cost="${Math.max(0, (parseInt(savedData?.duration) || 1) - 1)}" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0;">
 <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://w3.org" style="overflow: visible;">
 <g class="duration-web" stroke-width="1.5" stroke-dasharray="2,2" fill="none">
     <!-- Inner Diamond Track -->
@@ -7059,16 +7059,16 @@ function initSpellDropdownCalculators(cardElement, savedData = null) {
   // ========================================================================
   
   // 1. Sync Targets Saved State
-  const targetSelect = cardElement.querySelector('#target-select');
+  const targetSelect = cardElement.querySelector('.target-select');
   if (targetSelect) {
-    const nexusContainer = cardElement.querySelector('#nexus-container');
+    const nexusContainer = cardElement.querySelector('.nexus-container');
     if (nexusContainer) nexusContainer.setAttribute('data-targets', targetSelect.value || '1');
   }
 
   // 2. Sync Size Saved State
   const sizeSelect = cardElement.querySelector('.size-select-field');
   if (sizeSelect) {
-    const sizeNexus = cardElement.querySelector('#size-nexus-container');
+    const sizeNexus = cardElement.querySelector('.size-nexus-container');
     if (sizeNexus) sizeNexus.setAttribute('data-size-cost', Math.max(0, (parseInt(sizeSelect.value) || 1) - 1));
   }
 
@@ -7076,7 +7076,7 @@ function initSpellDropdownCalculators(cardElement, savedData = null) {
   const distanceSelect = cardElement.querySelector('.distance-select-field');
   if (distanceSelect) {
     // 🎯 REPAIR CHECK: Make sure this ID string exactly matches the ID typed inside your HTML SVG block!
-    const distanceNexus = cardElement.querySelector('#distance-nexus-container');
+    const distanceNexus = cardElement.querySelector('.distance-nexus-container');
     if (distanceNexus) distanceNexus.setAttribute('data-distance-cost', Math.max(0, (parseInt(distanceSelect.value) || 1) - 1));
   }
 
@@ -7084,7 +7084,7 @@ function initSpellDropdownCalculators(cardElement, savedData = null) {
   const durationSelect = cardElement.querySelector('.duration-select-field');
   if (durationSelect) {
     // 🎯 REPAIR CHECK: Make sure this ID string exactly matches the ID typed inside your HTML SVG block!
-    const durationNexus = cardElement.querySelector('#duration-nexus-container');
+    const durationNexus = cardElement.querySelector('.duration-nexus-container');
     if (durationNexus) durationNexus.setAttribute('data-duration-cost', Math.max(0, (parseInt(durationSelect.value) || 1) - 1));
   }
 
@@ -7617,19 +7617,21 @@ document.addEventListener("DOMContentLoaded", () => {
         // ----------------------------------------------------------------
         // BRANCH A: TARGETS CONFIGURATION OBSERVER
         // ----------------------------------------------------------------
-        if (event.target.id === "target-select") {
-    const targetDropdown = event.target;
-    const currentChoiceValue = targetDropdown.value || "1";
-    
-    const structuralFrame = targetDropdown.closest(".spell-card-attribute") || targetDropdown.parentElement.parentElement;
-    if (structuralFrame) {
-        const nexusWrapper = structuralFrame.querySelector("#nexus-container");
-        if (nexusWrapper) {
-            // Passes raw selection string (1-7) directly down to your CSS mapping layout engine
-            nexusWrapper.setAttribute("data-targets", currentChoiceValue);
+        // 🎯 FIX 1: Look for the class instead of the hardcoded ID
+        if (event.target.classList.contains("target-select")) {
+            const targetDropdown = event.target;
+            const currentChoiceValue = targetDropdown.value || "1";
+            
+            const structuralFrame = targetDropdown.closest(".spell-card-attribute") || targetDropdown.parentElement.parentElement;
+            if (structuralFrame) {
+                // 🎯 FIX 2: Changed '#' to '.' because this container is repeated per card
+                const nexusWrapper = structuralFrame.querySelector(".nexus-container");
+                if (nexusWrapper) {
+                    // Passes raw selection string (1-7) directly down to your CSS mapping layout engine
+                    nexusWrapper.setAttribute("data-targets", currentChoiceValue);
+                }
+            }
         }
-    }
-}
 
         // ----------------------------------------------------------------
         // BRANCH B: SIZE CONFIGURATION OBSERVER (NEW INSERTION)
@@ -7645,7 +7647,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
         const structuralFrame = sizeDropdown.closest(".size-metric-box");
         if (structuralFrame) {
-        const sizeNexusWrapper = structuralFrame.querySelector("#size-nexus-container");
+        const sizeNexusWrapper = structuralFrame.querySelector(".size-nexus-container");
         if (sizeNexusWrapper) {
             // Pass the adjusted points score (0-6) down to the CSS rules engine
             sizeNexusWrapper.setAttribute("data-size-cost", trueIntricacyPoints);
@@ -7664,7 +7666,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const structuralFrame = distanceDropdown.closest(".distance-metric-box");
     if (structuralFrame) {
-        const distanceNexus = structuralFrame.querySelector("#distance-nexus-container");
+        const distanceNexus = structuralFrame.querySelector(".distance-nexus-container");
         if (distanceNexus) {
             distanceNexus.setAttribute("data-distance-cost", trueIntricacyPoints);
         }
@@ -7682,7 +7684,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const structuralFrame = durationDropdown.closest(".duration-metric-box");
     if (structuralFrame) {
-        const durationNexus = structuralFrame.querySelector("#duration-nexus-container");
+        const durationNexus = structuralFrame.querySelector(".duration-nexus-container");
         if (durationNexus) {
             durationNexus.setAttribute("data-duration-cost", trueIntricacyPoints);
         }

@@ -4031,7 +4031,7 @@ function createSpellCard(savedData = null) {
   <span class="qualifier-slider-label">Dormant</span>
   
   <!-- MAINTAINED: Your original data inputs and core trigger classes in their exact, centered placement -->
-  <input type="checkbox" id="dormant-master-toggle" class="sp-data qualifier-toggle qualifier-toggle-checkbox dormant-toggle-button" data-field="qualifier_dormant" data-cost="0" ${savedData?.qualifier_dormant ? 'checked' : ''} style="margin-top: 4px;" />
+  <input type="checkbox" class="sp-data qualifier-toggle qualifier-toggle-checkbox dormant-toggle-button dormant-master-toggle" data-field="qualifier_dormant" data-cost="0" ${savedData?.qualifier_dormant ? 'checked' : ''} style="margin-top: 4px;" />
   
   <!-- 🎯 FIXED SVG POSITIONING: Raised up and given position: absolute so its 74px boundary box never squeezes your columns! -->
   <svg class="dormant-pip-gauge" viewBox="0 0 74 24" width="74" height="24" data-active-tier="${savedData?.qualifier_dormant_value || '1'}"
@@ -4060,9 +4060,9 @@ function createSpellCard(savedData = null) {
 <!-- 🎯 RE-POSITIONED SELECTION DRAWER: Locked perfectly flush from side-to-side with the bottom panel border -->
 <div class="dormant-selection-drawer-space" style="position: absolute !important; bottom: -16px; left: 1px; right: 1px; z-index: 50; box-sizing: border-box;">
   <!-- MAINTAINED: Exact div IDs and structural parameters for your collapsible panel -->
-  <div id="dormant-dropdown-panel" style="display: none; align-items: center; width: 100%; padding: 0;">
+  <div class="dormant-dropdown-panel" style="display: none; align-items: center; width: 100%; padding: 0;">
     <!-- MAINTAINED: Exact menu values and conditional selection tracking code strings -->
-    <select id="dormant-time-matrix" class="sp-data dormant-select-field" data-field="qualifier_dormant_value" style="width: 100%; height: 28px; background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.75rem; padding: 0 4px; cursor: pointer; box-sizing: border-box;">
+    <select class="sp-data dormant-select-field dormant-time-matrix" data-field="qualifier_dormant_value" style="width: 100%; height: 28px; background: #1e293b; border: 1px solid #4b5563; border-radius: 4px; color: #f8fafc; font-size: 0.75rem; padding: 0 4px; cursor: pointer; box-sizing: border-box;">
       <option value="1" ${savedData?.qualifier_dormant_value === "1" ? "selected" : ""}>One Round (+1)</option>
       <option value="2" ${savedData?.qualifier_dormant_value === "2" ? "selected" : ""}>One Scene (+2)</option>
       <option value="3" ${savedData?.qualifier_dormant_value === "3" ? "selected" : ""}>One Hour (+3)</option>
@@ -6946,14 +6946,14 @@ function recalculateSpellIntricacyScore(targetCard) {
     checkedQualifiers.forEach(activeSlider => {
         // A. HARDENED DORMANT MATRIX LOGIC
         if (activeSlider.id === 'dormant-master-toggle' || activeSlider.dataset.field === 'qualifier_dormant') {
-            const dormantSelectMenuField = targetCard.querySelector('#dormant-time-matrix');
+            const dormantSelectMenuField = targetCard.querySelector('.dormant-time-matrix');
             const calculatedDormancyCost = parseInt(dormantSelectMenuField?.value) || 1;
 //            console.log("🔍 MATH PROBE 2A | Detected Dormant slider. Cost value evaluated: +", calculatedDormancyCost);
             
             totalAccumulatedIntricacySum += calculatedDormancyCost;
 
-            const dormantBadge = targetCard.querySelector('#dormant-cost-badge');
-            if (dormantBadge) dormantBadge.textContent = `+${calculatedDormancyCost}`;
+//            const dormantBadge = targetCard.querySelector('.dormant-cost-badge');
+//            if (dormantBadge) dormantBadge.textContent = `+${calculatedDormancyCost}`;
         } 
         // B. FLAT QUALIFIERS LOGIC (Subtle, Variable, Mobile, Malleable)
         else {
@@ -7091,12 +7091,13 @@ function initSpellDropdownCalculators(cardElement, savedData = null) {
   // ========================================================================
   // 🔥 ELEVATED DEFENSE HOOKS: Defined at the absolute top for global access
   // ========================================================================
-  const dormantToggle = cardElement.querySelector('#dormant-master-toggle');
-  const dormantDropdownPanel = cardElement.querySelector('#dormant-dropdown-panel');
-  const dormantSelect = cardElement.querySelector('#dormant-time-matrix');
+    // 1. Target by classes scoped strictly within this unique card instance
+  const dormantToggle = cardElement.querySelector('.dormant-master-toggle');
+  const dormantDropdownPanel = cardElement.querySelector('.dormant-dropdown-panel');
+  const dormantSelect = cardElement.querySelector('.dormant-time-matrix');
 
-  // Unified, layout-stable display sync routine
-  window.syncQualifierDormantDisplay = function() {
+  // 2. Localized, layout-stable display sync routine
+  const syncQualifierDormantDisplay = function() {
     if (!dormantToggle) return;
     
     if (dormantToggle.checked) {
@@ -7109,6 +7110,20 @@ function initSpellDropdownCalculators(cardElement, savedData = null) {
       }
     }
   };
+
+  // 3. Attach the event listener directly to this specific toggle element
+  if (dormantToggle) {
+    dormantToggle.addEventListener('change', syncQualifierDormantDisplay);
+  }
+
+  // 4. Force a sync right now to match the initial/loaded state
+  syncQualifierDormantDisplay();
+
+  // ========================================================================
+  // 💾 YOUR LEDGERS & OTHER LISTENERS CONTINUED BELOW...
+  // ========================================================================
+  // (Your remaining logic goes here, using cardElement.querySelector)
+
 
   // ========================================================================
   // ⚡ UNIFIED OVERHAUL: DIRECT OBJECT EFFECTS HYDRATION ENGINE

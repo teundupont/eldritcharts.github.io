@@ -25,45 +25,6 @@
       margin: 0;
       padding: 20px;
     }
-/* The core setup for your two jagged portals 
-.chaos-intrusion {
-  position: fixed;
-  width: 400px;   Width of the portal region 
-  height: 800px;  Height of the crack 
-  z-index: -1;    Keeps them locked safely behind all text and cards 
-  
-   🔮 THE REACTION CONSTANT: Controlled entirely by your Javascript math 
-  --tear-width: 0; 
-  
-   Use our jagged vector mask to clip the container 
-  clip-path: url(#chaos-tear-mask);
-  
-   An organic swirling cosmic gradient inside the crack 
-  background: radial-gradient(circle at center, #d8b4fe 0%, #a855f7 40%, #4c1d95 80%, #000 100%);
-  box-shadow: inset 0 0 20px rgba(168, 85, 247, 0.8);
-  
-   Forces the crack to widen only horizontally (X-axis) like a tearing portal 
-  transform: scaleX(var(--tear-width));
-  transform-origin: center center;
-  
-   A smooth transition so the physical rip feels impactful and satisfying 
-  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-  opacity: 0.85;
-}
-
- Position Intrusion 1 on the upper left flank 
-.intrusion-left {
-  top: -100px;
-  left: -50px;
-  transform: rotate(-15deg) scaleX(var(--tear-width)); /* Slight organic tilt 
-}
-
- Position Intrusion 2 on the bottom right flank 
-.intrusion-right {
-  bottom: -100px;
-  right: -50px;
-  transform: rotate(20deg) scaleX(var(--tear-width));   Intersecting counter-angle 
-} */
     .sheet-container {
       max-width: 1000px;
       margin: 0 auto;
@@ -2432,26 +2393,123 @@ body:has(#token-bank.active-tab) #eldritch-phase-track {
     margin: 0 !important;
 }
 
+/* ========================================================================
+   🔮 ELDRITCH PHASE: PORTAL DESIGN SYSTEM (STATIC CENTER SPINE ENGINE)
+   ======================================================================== */
+
+/* 1. Ensure your existing main <form> element is configured as the boundary anchor */
+form {
+  position: relative; /* This turns the form boundary into the calculations floor */
+  width: 100%;
+  max-width: 1200px;  /* Match this to your sheet layout's designated width cap */
+  margin: 0 auto;     /* Automatically keeps the form structure centered on screen */
+}
+
+/* 2. Push your interactive card contents into a safe top layer so they mask the tears */
+/* Apply this class to the inner wrapper container housing your stats/tabs */
+.main-sheet-content {
+  position: relative;
+  z-index: 10; /* Keeps interactive form fields sitting securely over the background */
+  background: rgba(30, 27, 46, 0.96); /* Slightly opaque backdrop frame to obscure the inner half */
+}
+
+/* 1. Static Layout Boundaries (They act as perfectly still anchor rods) */
+.chaos-portal-anchor {
+  position: absolute;
+  /* 🎯 THE DRIFT KILLER: Start with 0 physical width so center scaling doesn't creep */
+  width: 0px;       
+  height: 800px;  
+  z-index: 1;       /* Tucked behind the main sheet content layer */
+  pointer-events: none;
+}
+
+/* Position the Left Center Anchor Line */
+.left-side-gate {
+  top: -100px;
+  /* 🎯 RESTING POSITION: Adjust this coordinate to set the center-line of the left rip */
+  left: -20px; 
+  transform: rotate(-15deg);
+}
+
+/* Position the Right Center Anchor Line */
+.right-side-gate {
+  bottom: -100px;
+  /* 🎯 RESTING POSITION: Adjust this coordinate to set the center-line of the right rip */
+  right: -20px; 
+  transform: rotate(20deg);
+}
+
+/* 2. The Inner SVGs (They burst outwards from the still anchor line) */
+.chaos-intrusion {
+  /* 🎯 FORCE EXPANSION: Force the 0px parent width to expand up to 400px maximum width */
+  width: 400px;
+  height: 100%;
+  
+  /* Pull the graphic back by half its width so its center alignment lines up with the 0px spine */
+  margin-left: -200px; 
+  
+  /* 🔮 THE REACTION CONSTANT */
+  --tear-width: 0; 
+  
+  /* Cosmetics & Masking */
+  clip-path: url(#chaos-tear-mask);
+  background: radial-gradient(circle at center, #d8b4fe 0%, #a855f7 40%, #4c1d95 80%, #000 100%);
+  box-shadow: inset 0 0 20px rgba(168, 85, 247, 0.8);
+  opacity: 0.85;
+
+  /* 🎯 LOCK THE GRID: Perfectly centralized scale means no movement on top, bottom, or sides */
+  transform-origin: center center; 
+  transform: scaleX(var(--tear-width));
+  
+  /* Smooth widening transition pass */
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), filter 0.3s ease-out;
+}
+
   </style>
 </head>
 <body>
 
-<!--
- Invisible SVG Definitions for Chaos Tears 
- <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" width="0" height="0">
-   <defs>
-     Sharp, jagged lightning tear path 
-    <clipPath id="chaos-tear-mask" clipPathUnits="objectBoundingBox">
-      <path d="M 0.5,0 L 0.53,0.2 L 0.46,0.35 L 0.55,0.55 L 0.44,0.7 L 0.52,0.85 L 0.48,1 L 0.52,1 L 0.56,0.83 L 0.49,0.71 L 0.59,0.53 L 0.49,0.37 L 0.57,0.22 Z"/>
-    </clipPath>
-  </defs>
+
+<!-- Invisible SVG Definitions for Chaos Tears -->
+<svg style="position: absolute; width: 0; height: 0; overflow: hidden;" width="0" height="0">
+  <defs>
+   <!-- Sharp, jagged lightning tear path -->
+   <clipPath id="chaos-tear-mask" clipPathUnits="objectBoundingBox">
+     <!-- 🎯 FIX: Consolidated the bottom '1' markers into a single sharp 0.5 center point -->
+     <path d="M 0.5,0 
+              L 0.53,0.2 L 0.46,0.35 L 0.55,0.55 L 0.44,0.7 L 0.52,0.85 
+              L 0.5,1 
+              L 0.56,0.83 L 0.49,0.71 L 0.59,0.53 L 0.49,0.37 L 0.57,0.22 Z"/>
+   </clipPath>
+ </defs>
 </svg>
 
- 🎯 THE TWO INTRUSIONS: The physical rips floating safely beneath your character sheet panels 
-<div class="chaos-intrusion intrusion-left"></div>
-<div class="chaos-intrusion intrusion-right"></div> -->
 
 <form id="char-sheet" class="sheet-container">
+
+<!-- 🎯 THE TWO INTRUSIONS: The physical rips floating safely beneath your character sheet panels -->
+
+<!-- 🔮 LEFT CHAOS PORTAL WRAPPER -->
+<div class="chaos-portal-anchor left-side-gate">
+    <svg class="chaos-intrusion intrusion-left" ...>/* your left SVG path code */</svg>
+</div>
+<!-- 🔮 RIGHT CHAOS PORTAL WRAPPER -->
+<div class="chaos-portal-anchor right-side-gate">
+    <svg class="chaos-intrusion intrusion-right" ...>/* your right SVG path code */</svg>
+</div>
+<!-- 👑 NEW EMPOWERED POWER GATES (Placed in the background) -->
+<!-- LEFT POWER PORTAL WRAPPER -->
+<div class="power-portal-anchor left-power-gate">
+    <div class="power-flare flare-left"></div>
+</div>
+<!-- RIGHT POWER PORTAL WRAPPER -->
+<div class="power-portal-anchor right-power-gate">
+    <div class="power-flare flare-right"></div>
+</div>
+
+<!-- 🛡️ YOUR INTERACTIVE CONTENT WRAPPER -->
+<!-- (Everything else like tabs, stats, and rollers stay inside here) -->
+<div class="main-sheet-content">
 
 <!-- TAB NAVIGATION BAR -->
 <div class="tab-navigation">
@@ -2562,7 +2620,7 @@ body:has(#token-bank.active-tab) #eldritch-phase-track {
 <!-- ========================================================================= -->
 <!-- GLOBAL SYNCED ELDRITCH PHASE MONITOR PANEL (VISIBLE ACROSS ALL TABS)      -->
 <!-- ========================================================================= -->
-<div id="global-phase-panel" style="background: transparent; border: none; padding: 2px 15px 6px 15px; border-radius: 6px; box-sizing: border-box; width: 100%; margin-top: -30px; margin-bottom: -15px;">
+<div id="global-phase-panel" style="background: transparent; border: none; padding: 2px 15px 6px 15px; border-radius: 6px; box-sizing: border-box; width: 100%; margin-top: -15px;">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; flex-wrap: wrap; gap: 10px;">
     <label style="color: #c084fc; font-weight: bold; margin: 0; letter-spacing: 0.5px; text-transform: uppercase; font-size: 0.85rem;">🔮 Eldritch Phase Tracker</label>
     <!-- Master Unified Status Label -->
@@ -2606,6 +2664,14 @@ body:has(#token-bank.active-tab) #eldritch-phase-track {
   </div>
 </div>
    </div>
+
+<!-- Inside the Character Info Tab layout structure -->
+<div class="setting-toggle-wrapper" style="display: flex; align-items: center; gap: 8px; margin: 12px 0;">
+    <input type="checkbox" id="toggle-eldritch-bg" name="toggle-eldritch-bg" class="sheet-setting-checkbox" checked>
+    <label for="toggle-eldritch-bg" style="font-weight: bold; color: var(--text-color, #fff); cursor: pointer;">
+        Enable Dynamic Chaos Phase Background Animations
+    </label>
+</div>
 
 <!-- ========================================================================= -->
 <!-- DYNAMIC FILE SYSTEM ACTIONS PANEL (UPDATED WITH GLOBAL PURGE PILLAR)      -->
@@ -2981,6 +3047,7 @@ body:has(#token-bank.active-tab) #eldritch-phase-track {
   </div>
 
 </section>
+</div>
 
 </form>
 
@@ -5100,6 +5167,16 @@ const blessingEffects = [];
   });
   data._checkedBoxes = checkedStateLog;
 
+  // Inside your core global saveAllData() function:
+  // (Place this near the end of the data compilation loop, right before localStorage.setItem)
+
+  const bgToggle = document.getElementById('toggle-eldritch-bg');
+  if (bgToggle) {
+      // 🎯 THE FIX: Force inject the element status directly into the character's checkedBoxes directory!
+      data._checkedBoxes = data._checkedBoxes || {};
+      data._checkedBoxes['toggle-eldritch-bg'] = bgToggle.checked;
+  }
+
   // Commit deep tracking object straight into local memory cache
   localStorage.setItem('eldritch_char_sheet_final', JSON.stringify(data));
 }
@@ -5234,6 +5311,22 @@ if (targetSpeedBonusEl) {
         }
       }
     });
+
+    // Inside your character sheet's data restoration / initialization function:
+    // (Place this where saved database records are parsed back onto the UI)
+
+    const bgToggle = document.getElementById('toggle-eldritch-bg');
+    if (bgToggle && data && data._checkedBoxes) {
+    
+        // Check if the setting exists inside your specialized nested dictionary object 
+        if (data._checkedBoxes['toggle-eldritch-bg'] !== undefined) {
+            // Hydrate the visual checkbox element based on true boolean or text variants
+            bgToggle.checked = (data._checkedBoxes['toggle-eldritch-bg'] === true || data._checkedBoxes['toggle-eldritch-bg'] === "true");
+        } else {
+            // Default fallback option to keep animations active on pristine characters
+            bgToggle.checked = true; 
+        }
+    }
 
     // Rebuild dynamic row configurations
     if (data._socialList) data._socialList.forEach(soc => createSocialRow(soc));
@@ -8430,73 +8523,89 @@ if (parentRow.getAttribute('data-type') === 'custom') {
       recalculateSpellIntricacyScore(masterCardContainer);
   }
 });
-/*
+
 // ========================================================================
-// 🔮 ELDRITCH PHASE: BACKGROUND REACTION ENGINE
+// 🔮 ELDRITCH PHASE: BACKGROUND REACTION ENGINE (ARCHITECTURALLY CORRECTED)
 // ========================================================================
 function initializeEldritchBackgroundEngine() {
-    // 🛠️ TARGET IDENTIFICATION: Replace 'hidden-phase-tracker-id' with your actual tracking input ID!
     const phaseTrackerNode = document.getElementById('eldritch-phase-value');
-    
+    const bgToggle = document.getElementById('toggle-eldritch-bg');
+
     if (!phaseTrackerNode) {
         console.warn("⚠️ Eldritch Background Engine: Tracker input field target not found yet.");
         return;
     }
 
-    // This internal sub-function handles reading the value and painting the background width
+    // 🎯 RECTIFICATION 1: Visual Painting Loop
     function updateBackgroundVisuals() {
-    const phaseTrackerNode = document.getElementById('eldritch-phase-value');
-    const rawValue = parseInt(phaseTrackerNode?.value) || 0;
-    
-    // Find our two independent vector tear components
-    const intrusions = document.querySelectorAll('.chaos-intrusion');
-
-    // 🔮 CHAOS MODE (Negative Numbers)
-    if (rawValue < 0) {
-        const chaosDepth = Math.abs(rawValue); // e.g., -1 becomes 1, -4 becomes 4
+        const rawValue = parseInt(phaseTrackerNode?.value) || 0;
+        const intrusions = document.querySelectorAll('.chaos-intrusion');
         
-        // Math Translation: Each step into chaos widens the tear horizontally.
-        // Step -1 = 0.25 (thin crack), Step -4 = 1.0 (wide jagged portal), Step -6 = 1.5 (gaping abyssal rift)
-        const calculatedScaleWidth = chaosDepth * 0.25;
+        // Safety check to ensure we always evaluate the live state of the element
+        const isAnimationEnabled = bgToggle ? bgToggle.checked : true;
 
-        intrusions.forEach(tear => {
-            tear.style.setProperty('--tear-width', calculatedScaleWidth);
-            // Optional ambient magical rumble glow
-            tear.style.filter = `drop-shadow(0 0 ${10 + chaosDepth * 5}px rgba(168, 85, 247, 0.6))`;
-        });
-    } 
-    // 🛡️ BALANCED OR POWER MODE (0 or Positive Numbers)
-    else {
-        // Completely pinch the jagged cracks shut back into reality!
-        intrusions.forEach(tear => {
-            tear.style.setProperty('--tear-width', '0');
-            tear.style.filter = 'none';
-        });
+        if (rawValue < 0 && isAnimationEnabled) {
+            const chaosDepth = Math.abs(rawValue); 
+            const calculatedScaleWidth = chaosDepth * 0.25;
+
+            intrusions.forEach(tear => {
+                tear.style.setProperty('--tear-width', calculatedScaleWidth);
+                tear.style.filter = `drop-shadow(0 0 ${10 + chaosDepth * 5}px rgba(168, 85, 247, 0.6))`;
+            });
+        } else {
+            // Force pinch shut if disabled, phase is 0, or phase is positive
+            intrusions.forEach(tear => {
+                tear.style.setProperty('--tear-width', '0');
+                tear.style.filter = 'none';
+            });
+        }
     }
-}
 
-
-    // 🏎️ Initial Execution pass: Paint correctly the second the character sheet finishes loading
-    updateBackgroundVisuals();
-
-    // 🕵️ MUTATION OBSERVER PIPELINE: Watches the hidden HTML field for data shifts automatically!
+    // 🎯 RECTIFICATION 2: Deep-Level Mutation Observer
+    // By watching both the "value" and "checked" states, we bypass the timing engine bug entirely!
+    // Whether the tracker shifts or your page-load system toggles the checkbox, this triggers immediately.
     const visualSentryObserver = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
-            if (mutation.type === "attributes" && mutation.attributeName === "value") {
+            if (mutation.type === "attributes") {
                 updateBackgroundVisuals();
             }
         });
     });
 
-    // Arm the sentry target to look out for attribute alterations
+    // Wire the observer to monitor attribute modifications to the phase tracker
     visualSentryObserver.observe(phaseTrackerNode, { attributes: true });
+    
+    if (bgToggle) {
+        // Wire the observer to monitor when your sheet loader toggles the checkbox state
+        visualSentryObserver.observe(bgToggle, { attributes: true });
+
+        // 🎯 RECTIFICATION 3: Clean Global Save Interface
+        bgToggle.addEventListener('change', () => {
+            updateBackgroundVisuals();
+            
+            // Simply let your global engine handle the saving payload!
+            // It will naturally route this element's state directly into '_checkedBoxes'.
+            if (typeof saveAllData === 'function') saveAllData(); 
+        });
+    }
+
+    // Execute once on script arrival
+    updateBackgroundVisuals();
+    
+    // 🎯 TIMING OVERRIDE LAYER: Forces a final painting sync 200ms after boot up.
+    // This gives your page-load restoration functions plenty of time to unpack,
+    // toggle the checkbox via '_checkedBoxes', and change your phase tracking fields.
+    setTimeout(() => {
+        updateBackgroundVisuals();
+    }, 200);
 }
 
 // Fire the initialization pass once the global document frame loads
 document.addEventListener("DOMContentLoaded", () => {
     initializeEldritchBackgroundEngine();
 });
-*/
+
+
 </script>
 
 </body>
